@@ -1,7 +1,8 @@
 use Object::Pad ':experimental(:all)';
 
 package WWW::srvdir;
-class WWW::srvdir :does(WWW::srvdir::config);
+
+class WWW::srvdir : does(WWW::srvdir::Base) : does(WWW::srvdir::config);
 
 use utf8;
 use v5.40;
@@ -11,79 +12,46 @@ our $VERSION = "0.01";
 use meta;
 use Path::Tiny;
 use MIME::Types 'by_suffix';
-use Data::Dumper;
-use Const::Fast;
+use Plack::Builder;
 use Plack::App::Directory;
 use Plack::MIME;
 use MIME::Types;
 use Const::Fast;
 use Const::Fast::Exporter;
 use Syntax::Keyword::Dynamically;
-use Time::Moment;
-use Time::Piece;
 
-use Exporter qw(import);
+use WWW::srvdir::Base;
 
-BEGIN {
-    our @EXPORT = qw(dmsg);
-}
+Plack::MIME->set_fallback( sub { ( by_suffix $_[0] )[0] } );
 
-our $DEBUG = $ENV{DEBUG} // 0;
-
-eval { use Devel::StackTrace::WithLexicals } if $DEBUG;
-
-use subs 'dmsg';
-
-Plack::MIME->set_fallback(sub { (by_suffix $_[0])[0] });
-
-field $root = '.';
-field $mount = '/';
-field $app { Plack::App::Directory->new({ root => "/path/to/htdocs" })->to_app }
+field $root  : param //= '.';
+field $mount : param //= '/';
+field $app;
 field $builder { Plack::Builder->new }
 
-sub dmsg (@msgs) {
-    $DEBUG || return '';
-
-    my @caller = caller 0;
-
-    my $out = "*** " . localtime->datetime . " - DEBUG MESSAGE ***\n\n";
-
-    {
-        dynamically $Data::Dumper::Pad    = "  ";
-        dynamically $Data::Dumper::Indent = 1;
-
-        $out .=
-            scalar @msgs > 1 ? Dumper(@msgs)
-          : ref $msgs[0]     ? Dumper(@msgs)
-          :                    eval { my $s = $msgs[0] // 'undef'; "  $s\n" };
-
-        $out .= "\n"
-    }
-
-    $out .=
-      $ENV{DEBUG} && $ENV{DEBUG} == 2
-      ? join "\n", map { ( my $line = $_ ) =~ s/^\t/  /; "  $line" } split /\R/,
-      Devel::StackTrace::WithLexicals->new(
-        indent      => 1,
-        skip_frames => 1
-      )->as_string
-      : "at $caller[1]:$caller[2]";
-
-    say STDERR "$out\n";
-    $out;
-}
+# method call ($env) {
+#     $app->call($env);
+# }
 
 method to_psgi {
-  $builder->to_app(@_)
+    $builder->to_app(@_);
 }
 
 method to_app {
-  $self->to_psgi(@_)
+    $self->to_psgi(@_);
 }
 
-ADJUSTPARAMS ($params) {
-  $builder->mount($mount => $root);
-  dmsg({self => $self})
+ADJUSTPARAMS($params) {
+    $app = Plack::App::Directory->new( root => $root );
+    
+    if ($WWW::srvdir::DEBUG || $self->debug) {
+      $builder->add_middleware('Debug');
+      $builder->add_middleware('StackTrace');
+    }
+   
+    $builder->mount( $mount => $app->to_app );
+    dmsg(
+        { self => $self, builder => $builder, app => $app, params => $params } )
 }
 
 __END__

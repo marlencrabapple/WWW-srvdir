@@ -4,7 +4,7 @@
       "Ian Bradley <crabapp@hikki.tech>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.26, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.27, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
@@ -46,11 +46,14 @@
             "Const::Fast::Exporter" : "0",
             "Cwd" : "0",
             "Data::Dumper" : "0",
+            "Devel::StackTrace::WithLexicals" : "0",
             "File::XDG" : "0",
             "IO::Socket::SSL" : "0",
+            "List::AllUtils" : "0",
             "MIME::Types" : "0",
             "Net::Async::HTTP::Server" : "0",
             "Net::SSLeay" : "0",
+            "Object::Pad" : "0",
             "Path::Tiny" : "0",
             "Plack::App::Directory" : "0",
             "Plack::Builder" : "0",
@@ -72,6 +75,9 @@
    },
    "release_status" : "unstable",
    "version" : "0.01",
+   "x_contributors" : [
+      "Ian P Bradley <ian.bradley@studiocrabapple.com>"
+   ],
    "x_serialization_backend" : "JSON::PP version 4.16",
    "x_static_install" : 1
 }

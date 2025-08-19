@@ -21,8 +21,11 @@ requires 'IO::Socket::SSL';
 requires 'File::XDG';
 requires 'Net::Async::HTTP::Server';
 requires 'TOML::Tiny';
+requires 'Object::Pad';
+requires 'Devel::StackTrace::WithLexicals';
+requires 'List::AllUtils';
 
-on 'test' => sub {;
+on 'test' => sub {
     requires 'Test::More', '0.98';
 };
 
