@@ -1,5 +1,4 @@
 name = "WWW-srvdir"
-badges = ["github-actions/test.yml"]
-module_maker="ModuleBuildTiny"
+#badges = ["github-actions/test.yml"]
+module_maker   = "ModuleBuildTiny"
 static_install = "auto"
-
