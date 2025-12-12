@@ -21,8 +21,9 @@ use WWW::srvdir::Base;
 
 field $argv : param;
 field $app;
-field $srvpath = path(abs_path);
+field $srvpath :param(srvpath) = path(abs_path);
 field $config_file;
+
 field $cliopts : param(dest) : reader = {
     ssl => {
         'ssl'        => 1,

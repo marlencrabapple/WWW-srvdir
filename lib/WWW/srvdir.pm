@@ -9,15 +9,12 @@ use v5.40;
 
 our $VERSION = "0.01";
 
-use meta;
 use Path::Tiny;
 use MIME::Types 'by_suffix';
 use Plack::Builder;
 use Plack::App::Directory;
 use Plack::MIME;
-use MIME::Types;
 use Const::Fast;
-use Const::Fast::Exporter;
 use Syntax::Keyword::Dynamically;
 
 use WWW::srvdir::Base;
