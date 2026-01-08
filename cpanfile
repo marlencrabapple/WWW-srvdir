@@ -29,3 +29,9 @@ on 'test' => sub {
     requires 'Test::More', '0.98';
 };
 
+on 'develop' => sub {
+  requires 'Minilla';
+  requires 'Perl::Critic';
+  requires 'Perl::Tidy';
+  requires 'Carmel'
+}
