@@ -1,7 +1,7 @@
 use Object::Pad ':experimental(:all)';
 
 package WWW::srvdir::config;
-role WWW::srvdir::config : does(WWW::srvdir::Base);
+role WWW::srvdir::config;
 
 use utf8;
 use v5.40;
@@ -14,8 +14,7 @@ use Path::Tiny;
 use File::XDG;
 use Const::Fast;
 use Const::Fast::Exporter;
-
-use WWW::srvdir::Base;
+use IPC::Nosh::Common;
 
 const our $xdg         => File::XDG->new( name => 'WWW::srvdir' );
 const our @config_dirs => $xdg->config_dirs_list;  # Assuming there's some sort

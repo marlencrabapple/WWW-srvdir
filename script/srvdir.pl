@@ -15,9 +15,8 @@ use Path::Tiny;
 use Getopt::Long qw'GetOptionsFromArray :config bundling auto_abbrev';
 use Plack::Runner;
 use Cwd 'abs_path';
-
+use IPC::Nosh::Common;
 use WWW::srvdir;
-use WWW::srvdir::Base;
 
 field $argv : param;
 field $app;
@@ -60,15 +59,6 @@ ADJUSTPARAMS($params) {
     );
 
     $app = WWW::srvdir->new( root => $srvpath, mount => '/' );
-    dmsg(
-        {
-            app     => $app,
-            srvpath => $srvpath,
-            cliopts => $cliopts,
-            self    => $self,
-            argv    => $argv
-        }
-    )
 }
 
 method to_app {
@@ -82,7 +72,7 @@ class main;
 use utf8;
 use v5.40;
 
-use WWW::srvdir::Base;
+use IPC::Nosh::Common;
 
 our ( $app, $srvdir ) = srvdir->new( argv => \@ARGV )->to_app;
 our $cliopts = $srvdir->cliopts;
