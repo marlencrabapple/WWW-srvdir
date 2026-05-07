@@ -24,6 +24,8 @@ requires 'TOML::Tiny';
 requires 'Object::Pad';
 requires 'Devel::StackTrace::WithLexicals';
 requires 'List::AllUtils';
+requires 'IPC::Nosh';
+requires 'Frame';
 
 on 'test' => sub {
     requires 'Test::More', '0.98';
