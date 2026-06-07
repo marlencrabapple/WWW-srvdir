@@ -16,7 +16,9 @@ use Plack::App::Directory;
 use Plack::MIME;
 use Const::Fast;
 use Syntax::Keyword::Dynamically;
-use IPC::Nosh::Common;
+use IO::Handle::Common;
+
+use WWW::srvdir::Util;
 
 Plack::MIME->set_fallback( sub { ( by_suffix $_[0] )[0] } );
 

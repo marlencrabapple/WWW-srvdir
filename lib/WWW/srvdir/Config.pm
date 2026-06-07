@@ -1,7 +1,7 @@
 use Object::Pad ':experimental(:all)';
 
-package WWW::srvdir::config;
-role WWW::srvdir::config;
+package WWW::srvdir::Config;
+role WWW::srvdir::Config;
 
 use utf8;
 use v5.40;

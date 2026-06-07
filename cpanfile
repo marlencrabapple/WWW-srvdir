@@ -25,6 +25,7 @@ requires 'Object::Pad';
 requires 'Devel::StackTrace::WithLexicals';
 requires 'List::AllUtils';
 requires 'IPC::Nosh';
+requires 'IO::Handle::Common';
 requires 'Frame';
 
 on 'test' => sub {
