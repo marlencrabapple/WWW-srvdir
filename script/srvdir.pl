@@ -15,50 +15,44 @@ use Path::Tiny;
 use Getopt::Long qw'GetOptionsFromArray :config bundling auto_abbrev';
 use Plack::Runner;
 use Cwd 'abs_path';
-use IPC::Nosh::Common;
+use IO::Handle::Common;
 use WWW::srvdir;
 
 field $argv : param;
 field $app;
-field $srvpath :param(srvpath) = path(abs_path);
+field $srvpath : param(srvpath) = path(abs_path);
 field $config_file;
 
-field $cliopts : param(dest) : reader = {
+field $cliopt: param(dest) : reader = {
     ssl => {
         'ssl'        => 1,
         'ssl-server' => 1
     },
-
 };
 
 ADJUSTPARAMS($params) {
     GetOptionsFromArray(
-        $argv, $cliopts,
+        $argv, $cliopt,
 
-        #'ssl|tls|x509',
-        'username=s',
-        'password=s',
+        'ssl|tls|x509', 'user|username:s', 'pwhash|password-hash:s',
         'verbose',
         'debug', 'help',
         'version',
-        'config-file|config-path=s',
+        'config|config-file|config-path=s',
         '<>' => sub ($barearg) {
             state $_set //= 0;
-            die "\$ARGV[0] has already been set to '$srvpath'" if $_set != 0;
-            $_set = 1 && $srvpath = path($barearg);
-
-            dmsg(
-                {
-                    self    => $self,
-                    cliopts => $cliopts,
-                    _set    => $_set,
-                    srvpath => $srvpath
-                }
-            );
+            #die "\$ARGV[0] has already been set to '$srvpath'" if $_set != 0;
+            fatal "Directory has already been set to '$srvpath'." $_set =
+              1 && $srvpath = path($barearg);
         }
     );
 
-    $app = WWW::srvdir->new( root => $srvpath, mount => '/' );
+    $app = WWW::srvdir->new(
+        $cliopt->%{qw'username pwhash debug verbose config'},
+        cliopt => $cliopt,
+        root   => $srvpath,
+        mount  => '/'
+    );
 }
 
 method to_app {
@@ -72,25 +66,19 @@ class main;
 use utf8;
 use v5.40;
 
-use IPC::Nosh::Common;
+use IO::Handle::Common;
 
 our ( $app, $srvdir ) = srvdir->new( argv => \@ARGV )->to_app;
-our $cliopts = $srvdir->cliopts;
+our $cliopt = $srvdir->cliopt;
 
 unless (caller) {
     require Plack::Runner;
     my $runner = Plack::Runner->new;
-    $runner->parse_options( $cliopts->{ssl}->%*, @ARGV );
-
-    if ( $$cliopts{pass} isa 'HASH' && $cliopts->{pass}{crypt} ) {
-        ...;
-    }
+    $runner->parse_options( $cliopt->{ssl}->%*, @ARGV );
 
     $runner->run($app);
 
-    dmsg( { runner => $runner, app => $app } );
-
-    warn "$! ($?)" if $? != 0;
+    error "$! ($?)" if $? > 0;
     exit $?;
 }
 

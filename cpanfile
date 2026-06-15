@@ -11,6 +11,8 @@ requires 'Plack::Builder';
 requires 'Cwd';
 requires 'Plack::MIME';
 requires 'MIME::Types';
+requires 'Crypt::Argon2';
+requires 'System::Info';
 requires 'Const::Fast';
 requires 'Const::Fast::Exporter';
 requires 'Syntax::Keyword::Dynamically';

@@ -1,0 +1,50 @@
+#!/usr/bin/env perl
+
+package path2uri;
+
+use v5.40;
+
+use lib 'lib';
+
+use WWW::srvdir::Util qw'path2uri';
+use Path::Tiny;
+use Getopt::Long
+  qw(GetOptionsFromArray :config no_ignore_case auto_abbrev passthrough bundling long_prefix_pattern=--?);
+use IO::Handle::Common;
+
+my @infile = ();
+my %cliopt = ( debug => $ENV{DEBUG}, outfile => undef, infile => \@infile );
+
+GetOptions(
+    \%cliopt,
+    'debug+',
+    'verbose+',
+    'outfile|output|writeto:s',
+    'host|domain|fqdn:s',
+    'root|mount:s',
+    'port|service:s',
+    'unique',
+    'infile|input=s@',
+    '<>' => sub ($barearg) {
+        push @infile, $barearg;
+    }
+);
+
+dmsg \%cliopt;
+
+my $htmlout = path2uri(
+    [
+        # grep { $_->is_file }
+        map { chomp $_; $_ }
+        map { path($_)->lines_utf8 } @infile
+    ],
+    %cliopt{qw'unique host port vroot'}
+);
+
+if ( my $outfile = $cliopt{outfile} ) {
+    $outfile = path($outfile)->spew_utf8($htmlout);
+    success("Encoded links written to '$outfile'");
+}
+else {
+    say $htmlout;
+}

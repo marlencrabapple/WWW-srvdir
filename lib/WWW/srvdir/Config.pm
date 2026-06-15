@@ -14,18 +14,14 @@ use Path::Tiny;
 use File::XDG;
 use Const::Fast;
 use Const::Fast::Exporter;
-use IPC::Nosh::Common;
+use IO::Handle::Common;
 
 const our $xdg         => File::XDG->new( name => 'WWW::srvdir' );
 const our @config_dirs => $xdg->config_dirs_list;  # Assuming there's some sort
                                                    # of heirarchal order to this
                                                    # list
 
-# BEGIN {
-#     our @EXPORT = qw(config);    # symbols to export on request
-# }
-
-our $_config;
+our $_config = {};
 const our $CONFIG => $_config;
 
 field $config : reader;
@@ -48,7 +44,7 @@ my method load_config : common ($path) {
 
     if ( -r $path ) {
         my ( $config, $error ) = from_toml( $path->slurp_utf8 );
-        dmsg( { config => $class::CONFIG, error => $error } );
+        dmsg( $class::CONFIG, $error );
         $_config = { %$CONFIG, $config->%* };
     }
 }
@@ -58,7 +54,7 @@ method load_all_config :
     foreach my $dir ( $dir_aref->@* ) {
 
         my $config_path = path("$dir/config.toml");
-        dmsg( { dir => $dir, config_path => $config_path, class => $class } );
+        dmsg( $dir, $config_path, $class );
         load_config( $class, $config_path );
     }
 }

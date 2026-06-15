@@ -48,6 +48,7 @@
          "requires" : {
             "Const::Fast" : "0",
             "Const::Fast::Exporter" : "0",
+            "Crypt::Argon2" : "0",
             "Cwd" : "0",
             "Data::Dumper" : "0",
             "Devel::StackTrace::WithLexicals" : "0",
@@ -67,6 +68,7 @@
             "Plack::MIME" : "0",
             "Plack::Runner" : "0",
             "Syntax::Keyword::Dynamically" : "0",
+            "System::Info" : "0",
             "TOML::Tiny" : "0",
             "Time::Moment" : "0",
             "Time::Piece" : "0",
