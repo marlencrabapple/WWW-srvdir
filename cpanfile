@@ -1,33 +1,27 @@
 requires 'perl', 'v5.40';
 
 requires 'meta';
-requires 'Path::Tiny';
-requires 'MIME::Types';
-requires 'Data::Dumper';
 requires 'Const::Fast';
-requires 'Plack::App::Directory';
-requires 'Plack::Runner';
-requires 'Plack::Builder';
-requires 'Cwd';
-requires 'Plack::MIME';
-requires 'MIME::Types';
 requires 'Crypt::Argon2';
-requires 'System::Info';
-requires 'Const::Fast';
-requires 'Const::Fast::Exporter';
+requires 'Cwd';
+requires 'File::HomeDir';
+requires 'IO::Handle::Common';
+requires 'IO::Socket::SSL';
+requires 'IPC::Nosh';
+requires 'MIME::Types';
+requires 'Net::SSLeay';
+requires 'Object::Pad';
+requires 'Path::Tiny';
+requires 'Plack::App::Directory';
+requires 'Plack::Builder';
+requires 'Plack::MIME';
+requires 'Plack::Runner';
 requires 'Syntax::Keyword::Dynamically';
+requires 'System::Info';
+requires 'TOML::Tiny';
+requires 'Test::More';
 requires 'Time::Moment';
 requires 'Time::Piece';
-requires 'Net::SSLeay';
-requires 'IO::Socket::SSL';
-requires 'File::XDG';
-requires 'Net::Async::HTTP::Server';
-requires 'TOML::Tiny';
-requires 'Object::Pad';
-requires 'Devel::StackTrace::WithLexicals';
-requires 'List::AllUtils';
-requires 'IPC::Nosh';
-requires 'IO::Handle::Common';
 requires 'Frame';
 
 on 'test' => sub {
@@ -35,8 +29,9 @@ on 'test' => sub {
 };
 
 on 'develop' => sub {
-  requires 'Minilla';
-  requires 'Perl::Critic';
-  requires 'Perl::Tidy';
-  requires 'Carmel'
+  requires 'Module::Build::Tiny';
+  recommends 'Minilla';
+  recommends 'Perl::Critic';
+  recommends 'Perl::Tidy';
+  recommends 'Carmel'
 }

@@ -29,3 +29,9 @@ cover_db/
 MYMETA.*
 
 /WWW-srvdir-*
+
+._*
+.DS_Store
+*.pem
+*.crt
+*.p12

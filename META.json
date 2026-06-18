@@ -32,11 +32,14 @@
          }
       },
       "develop" : {
-         "requires" : {
+         "recommends" : {
             "Carmel" : "0",
             "Minilla" : "0",
             "Perl::Critic" : "0",
-            "Perl::Tidy" : "0",
+            "Perl::Tidy" : "0"
+         },
+         "requires" : {
+            "Module::Build::Tiny" : "0",
             "Test::CPAN::Meta" : "0",
             "Test::MinimumVersion::Fast" : "0.04",
             "Test::PAUSE::Permissions" : "0.07",
@@ -47,19 +50,14 @@
       "runtime" : {
          "requires" : {
             "Const::Fast" : "0",
-            "Const::Fast::Exporter" : "0",
             "Crypt::Argon2" : "0",
             "Cwd" : "0",
-            "Data::Dumper" : "0",
-            "Devel::StackTrace::WithLexicals" : "0",
-            "File::XDG" : "0",
+            "File::HomeDir" : "0",
             "Frame" : "0",
             "IO::Handle::Common" : "0",
             "IO::Socket::SSL" : "0",
             "IPC::Nosh" : "0",
-            "List::AllUtils" : "0",
             "MIME::Types" : "0",
-            "Net::Async::HTTP::Server" : "0",
             "Net::SSLeay" : "0",
             "Object::Pad" : "0",
             "Path::Tiny" : "0",
@@ -70,6 +68,7 @@
             "Syntax::Keyword::Dynamically" : "0",
             "System::Info" : "0",
             "TOML::Tiny" : "0",
+            "Test::More" : "0",
             "Time::Moment" : "0",
             "Time::Piece" : "0",
             "meta" : "0",

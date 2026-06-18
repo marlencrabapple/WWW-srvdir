@@ -2,88 +2,207 @@ use Object::Pad ':experimental(:all)';
 
 package WWW::srvdir::Util;
 
-class WWW::srvdir::Util : does(WWW::srvdir::config);
+role WWW::srvdir::Util : does(WWW::srvdir::config);
 
 use utf8;
 use v5.40;
 
+no warnings 'experimental::re_strict';
+use re 'strict';
+
 use Path::Tiny;
 use Const::Fast;
+use Time::HiRes;
 use Syntax::Keyword::Dynamically;
 use IO::Handle::Common;
 use HTML::Escape;
 use URI::Escape;
+use Net::Domain 'hostfqdn';
+
+# use URI;
+use List::Util 'none';
+
 use Exporter;
-use Net::Domain qw'hostfqdn';
-
-use URI;
-
 use parent 'Exporter';
 
-our @EXPORT_OK = qw'path2uri';
+our @EXPORT_OK = qw'path2uri try_path epochfile_uniquep';
+our @EXPORT    = @EXPORT_OK;
 
-# field $cksum = {};
-# field $outfile
-
-# field $path = {};
-
-sub path_uri_encode ($pathstr) {
-
-    # my $uri = URI->($str);
-    join '/', map { uri_escape_utf8($_) } split qr!/!, $pathstr;
+APPLY {
+    dmsg [ caller 0 ], \@_, \%$class::;
 }
 
-sub file_unique( $in, $cksum_href ) {
-    $in = path($in);
-    my $digest = $in->digest;
-    $$cksum_href{$digest} //= [];
-    push $$cksum_href{$digest}->@*, $in->absolute;
+sub epoch ( $join = '' ) {
+    join $join, Time::HiRes::gettimeofday;
+}
 
-    my $ret;
+sub try_path( $in, %opt ) {
+    my $path;
 
-    if ( scalar $$cksum_href{$digest}->@* > 1 ) {
-        $ret = undef;
-        say STDERR "Duplicate file '$in' detected. Other paths: "
-          . ( join ', ', $$cksum_href{$digest}->@* ) . "\n";
+    try {
+        $path = path($in)
     }
-    else { $ret = 1 }
+    catch ($e) {
+        error "$e";
+        dmsg $in, \%opt, $e;
+    }
 
-    $ret;
+    $path;
 }
+
+my class FileUnique {
+    use utf8;
+    use v5.40;
+
+    use IO::Handle::Common;
+    use Path::Tiny;
+    use List::Util 'none';
+
+    field $cksum : reader = {};
+    field $digest : param;
+
+    method $file_unique($in) {
+        my $digest = $in->digest;
+        $$cksum{$digest} //= [];
+        push $$cksum{$digest}->@*, $in->absolute
+          if none { dmsg $in, $_; $in->absolute eq $_ } $$cksum{digest}->@*;
+
+        dmsg $in, $digest;
+
+        my $ret;
+
+        if ( scalar $$cksum{$digest}->@* > 1 ) {
+            $ret = undef;
+            say STDERR "Duplicate file '$in' detected. Other paths:";
+            my $dupestr = "  " . ( join ', ', $$cksum{$digest}->@* ) . "\n";
+            say STDERR $dupestr;
+        }
+        else { $ret = 1 }
+
+        $ret;
+    }
+
+    method file_unique : common (@in) {
+        my $self = $class->new();
+        $self->$file_unique( try_path($_) ) for @in;
+    }
+}
+
+sub file_unique(@in) {
+    FileUnique->file_unique(@in);
+}
+
+sub path_uri_encode( $path, %opt ) {
+    my $return_joined;
+    $opt{join} //= "\n";
+
+    ( $path, $return_joined ) = [ split qr!/!, $path ]
+      if ( ref $path && ref $path eq 'ARRAY' );
+
+    my @pathencoded = (
+        map {
+            $opt{charset} && $opt{charset} ne 'utf8'
+              ? uri_escape($_)
+              : uri_escape_utf8($_)
+        } @$path
+    );
+
+    $return_joined ? join( $opt{join}, @pathencoded ) : @pathencoded;
+}
+
+sub wrap_anchor ( $href, $text, %opt ) {
+    qq'<a href="$href" '
+      . (
+        $opt{title}
+        ? qq'"title="' . escape_html( $opt{title} ) . '"'
+        : ''
+      )
+      . '>'
+      . escape_html($text) . "</a>";
+}
+
+const our $urisplit => qr|
+ (?:([^:/?\#]+):)?
+ (?://([^/?\#]*))?
+ ([^?\#]*)
+ (?:\?([^\#]*))?(?:\#(.*))?|x;
+
+const our $pathsplit => qr|/|;
+
+sub uri_split( $uristr, %opt ) {
+    ( $uristr =~ $urisplit )
+}
+
+sub path_split( $pathstr, %opt ) {
+    ( split /$pathsplit/, $pathstr )
+}
+
+const our %urifield_default => (
+    scheme => 'https',
+    host   => hostfqdn,
+    ( map { ( $_ => undef ) } qw'port path query fragment' )
+);
 
 sub path2uri ( $path_aref, %opt ) {
-
-    # my $self = __PACKAGE__->new;
-    my %cksum = ();
-    my @html;
+    my @out;
 
     $opt{host} //= hostfqdn;
+    $opt{join} //= "\n";
 
-    my $uri = URI->new( $opt{host} );
-    $uri->port( $opt{port} ) if $opt{port};
+    my %urifield;
 
-    $uri->scheme('https');
+    foreach my ($pathstr) (@$path_aref) {
 
-    foreach my ($path) (@$path_aref) {
-        dynamically $path = path($path)->absolute;
+        @urifield{ keys %urifield_default } = $pathstr =~ $urisplit;
 
-        next unless $path->is_file;
-        next if $opt{unique} && !file_unique( $path, \%cksum );
+        foreach my ( $k, $v ) (
+            map { ( $_ => ( $opt{$_} // $urifield_default{$_} ) ) }
+              keys %urifield_default
+          )
+        {
+            next unless $v;
+            if ( $opt{"replace_$k"} ) {
+                $urifield{$k} = $v;
+            }
+            else {
+                $urifield{$k} //= $v;
+            }
+        }
 
-        my $pathencoded = path_uri_encode($path);
-        my $link        = $uri->as_string;
+        if ( $opt{uniq} || $opt{readpath} ) {
+            $urifield{path} = try_path( $urifield{path} )->absolute;
 
-        my $html =
-            qq.<a href="$link">.
-          . escape_html( path("$path")->basename )
-          . "</a><br>";
+            next unless $urifield{path}->is_file;
+            next if $opt{unique} && !file_unique( $urifield{path} );
+        }
 
-        dmsg $path, $pathencoded, $link, $html;
+        my @pathencoded = path_uri_encode( path_split( $urifield{path} ) );
 
-        push @html, $html;
+        my $href;    # = $pathencoded;
+
+        if ( !$opt{relative} ) {
+            $href = "$urifield{scheme}://$urifield{host}$href";
+            $href .= ":$urifield{port}"
+              if none { $_ == $urifield{port} } qw(80 443);
+        }
+        $href .= join '/', @pathencoded;
+
+        $href .= "?$urifield{query}"    if $urifield{query};
+        $href .= "#$urifield{fragment}" if $urifield{fragment};
+
+        my $outstr = $href;
+
+        if ( $opt{wrap_anchor} ) {
+            wrap_anchor(
+                $href,
+                $pathencoded[ scalar @pathencoded - 1 ],
+                %opt{qw'title nofollow target style class id'}
+            );
+        }
+
+        push @out, $outstr;
     }
 
-    # dmsg \@html;
-    join " ", @html;
+    @out;
 }
 

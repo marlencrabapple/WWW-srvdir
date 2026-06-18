@@ -12,7 +12,7 @@ use Crypt::Argon2;
 use Net::SSLeay;
 use IO::Handle::Common;
 
-field $userdb : param = [];
+field $userdb : param : accessor = [];
 
 method hashpass ( $pass, $salt = undef, %opt ) {
     my $rv = Net::SSLeay::RAND_bytes( $salt, $opt{salt_bytes} // 1024 );
@@ -22,6 +22,7 @@ method hashpass ( $pass, $salt = undef, %opt ) {
 
     argon2_pass( $pass, $salt );
 }
+
 const our $argon2_re => qr/^\$argon2,\$v=[],\$v=[],\$m=[],t=[],p=[]\$[.+]$/x;
 
 method add_user ( $user, @pass ) {
