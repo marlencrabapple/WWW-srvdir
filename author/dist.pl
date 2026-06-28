@@ -28,7 +28,6 @@ my $package = ( $config{author}->{name} =~ s/-/::/gr );
 my $archive;
 my $version;
 
-# my $trial = grep { $_ eq '--trial' } @ARGV;
 my $trial //= $config{author}->{release_status}
   && $config{author}->{release_status} ne 'stable' ? 1 : 0;
 
@@ -38,11 +37,7 @@ const our $dist_suffix_default => 'TRIAL';
 my $dist_suffix;
 $dist_suffix = $dist_suffix_default if $trial;
 
-# dmsg \%config, $package, $trial, $dist_suffix;
-
 sub cli ( $argv = \@ARGV, %opt ) {
-
-    # my %cliopt
 
     GetOptionsFromArray(
         $argv,
@@ -60,6 +55,8 @@ sub cli ( $argv = \@ARGV, %opt ) {
 }
 
 sub mvdir ( $src, $dst, %opt ) {
+    $dst->mkdir unless $dst->is_dir;
+
     my $onvisit = sub ( $path, $state ) {
 
         if ( $path->is_dir ) {
@@ -72,7 +69,9 @@ sub mvdir ( $src, $dst, %opt ) {
             $path->remove;
         }
     };
+
     $src->visit( $onvisit, { recurse => 1 } );
+    $src->remove_tree;
 }
 
 sub make_dist( $dist, %opt ) {
@@ -88,14 +87,14 @@ sub make_dist( $dist, %opt ) {
 
         $tmp = Path::Tiny->tempdir;
 
-        mvdir( $bindir, $tmp, );
+        mvdir( $bindir, $tmp );
 
     }
 
     const my $archive_re => qr/^Wrote (($dist)-(.+?)(?:-(TRIAL))?\.tar\.gz)$/;
 
     my $run = run(
-        [ qw'minil dist', $trial ],
+        [qw'minil dist'],
         out => sub ( $line, @ ) {
             $test++;
 
