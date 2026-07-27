@@ -14,12 +14,19 @@ use File::XDG;
 use Const::Fast;
 use IO::Handle::Common;
 
-const our @CONFIGDIR_DEFAULT = ( File::HomeDir->my_dist_config, abs_path );
+use WWW::srvdir::Util;
 
-field $toml = TOML::Tiny->nwq field $configfile =
-  [ map { try_path("$_/srvdir.toml") } @CONFIGDIR_DEFAULT ];
-field $config;
+const our @CONFIGDIR_DEFAULT => ( File::HomeDir->my_dist_config, abs_path );
+
+field $toml = TOML::Tiny->new;
+field $configfile =
+  [ map { try_path("$_/srvdir.toml") } grep { $_ } @CONFIGDIR_DEFAULT ];
+field $config_href : reader = {};
 
 APPLY {
     dmsg @CONFIGDIR_DEFAULT, \%$class::, \%ENV,
+};
+
+method config (%opt) {
+    $config_href;
 }

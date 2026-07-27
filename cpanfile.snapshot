@@ -379,10 +379,10 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  Crypt-Argon2-0.031
-    pathname: L/LE/LEONT/Crypt-Argon2-0.031.tar.gz
+  Crypt-Argon2-0.032
+    pathname: L/LE/LEONT/Crypt-Argon2-0.032.tar.gz
     provides:
-      Crypt::Argon2 0.031
+      Crypt::Argon2 0.032
     requirements:
       Dist::Build 0.028
       Dist::Build::XS 0
@@ -1818,18 +1818,18 @@ DISTRIBUTIONS
       PadWalker 0
       Path::Tiny 0
       perl v5.40.0
-  IO-Socket-SSL-2.098
-    pathname: S/SU/SULLR/IO-Socket-SSL-2.098.tar.gz
+  IO-Socket-SSL-2.099
+    pathname: S/SU/SULLR/IO-Socket-SSL-2.099.tar.gz
     provides:
-      IO::Socket::SSL 2.098
+      IO::Socket::SSL 2.099
       IO::Socket::SSL::Intercept 2.056
-      IO::Socket::SSL::OCSP_Cache 2.098
-      IO::Socket::SSL::OCSP_Resolver 2.098
+      IO::Socket::SSL::OCSP_Cache 2.099
+      IO::Socket::SSL::OCSP_Resolver 2.099
       IO::Socket::SSL::PublicSuffix undef
-      IO::Socket::SSL::SSL_Context 2.098
-      IO::Socket::SSL::SSL_HANDLE 2.098
-      IO::Socket::SSL::Session_Cache 2.098
-      IO::Socket::SSL::Trace 2.098
+      IO::Socket::SSL::SSL_Context 2.099
+      IO::Socket::SSL::SSL_HANDLE 2.099
+      IO::Socket::SSL::Session_Cache 2.099
+      IO::Socket::SSL::Trace 2.099
       IO::Socket::SSL::Utils 2.015
     requirements:
       ExtUtils::MakeMaker 0
@@ -3869,15 +3869,15 @@ DISTRIBUTIONS
       Types::Serialiser 0
       parent 0
       perl 5.010000
-  TOML-Tiny-0.21
-    pathname: O/OA/OALDERS/TOML-Tiny-0.21.tar.gz
+  TOML-Tiny-0.22
+    pathname: O/OA/OALDERS/TOML-Tiny-0.22.tar.gz
     provides:
-      TOML::Tiny 0.21
-      TOML::Tiny::Grammar 0.21
-      TOML::Tiny::Parser 0.21
-      TOML::Tiny::Tokenizer 0.21
-      TOML::Tiny::Util 0.21
-      TOML::Tiny::Writer 0.21
+      TOML::Tiny 0.22
+      TOML::Tiny::Grammar 0.22
+      TOML::Tiny::Parser 0.22
+      TOML::Tiny::Tokenizer 0.22
+      TOML::Tiny::Util 0.22
+      TOML::Tiny::Writer 0.22
     requirements:
       Carp 0
       Data::Dumper 0

@@ -25,7 +25,7 @@ requires 'Time::Piece';
 requires 'Frame';
 
 on 'test' => sub {
-    requires 'Test::More', '0.98';
+    requires 'Test::More', '0.98'
 };
 
 on 'develop' => sub {
@@ -35,3 +35,4 @@ on 'develop' => sub {
   recommends 'Perl::Tidy';
   recommends 'Carmel'
 }
+
