@@ -2,7 +2,7 @@ use Object::Pad ':experimental(:all)';
 
 package WWW::srvdir::Util;
 
-role WWW::srvdir::Util : does(WWW::srvdir::Config);
+role WWW::srvdir::Util;    #: does(WWW::srvdir::Config);
 
 use utf8;
 use v5.40;
@@ -18,19 +18,21 @@ use IO::Handle::Common;
 use HTML::Escape;
 use URI::Escape;
 use Net::Domain 'hostfqdn';
-
-# use URI;
 use List::Util 'none';
+
+# use WWW::srvdir::Path;
 
 use Exporter;
 use parent 'Exporter';
 
-our @EXPORT_OK = qw'path2uri try_path epochfile_uniquep';
+our @EXPORT_OK = qw'path try_path path2uri epoch file_unique path_uri_encode';
 our @EXPORT    = @EXPORT_OK;
 
+# field $pathtiny = {};
+
 APPLY {
-    dmsg [ caller 0 ], \@_, \%$class::;
-}
+    # dmsg [ caller 0 ], \@_, \%$class::;
+};
 
 sub epoch ( $join = '' ) {
     join $join, Time::HiRes::gettimeofday;

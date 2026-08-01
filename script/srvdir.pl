@@ -14,14 +14,14 @@ use lib 'lib';
 use Path::Tiny;
 use Getopt::Long qw'GetOptionsFromArray :config bundling auto_abbrev';
 use Plack::Runner;
-use Cwd 'abs_path';
 use IO::Handle::Common;
 use WWW::srvdir;
 
 field $argv : param;
 field $app;
-field $srvpath : param(srvpath) = path(abs_path);
-field $config_file;
+field $srvpath : param(srvpath) = path("./")->absolute;
+
+# field $config_file;
 
 field $cliopt : param(dest) : reader = {
     ssl => {
@@ -29,6 +29,10 @@ field $cliopt : param(dest) : reader = {
         'ssl-server' => 1
     },
 };
+
+# ADJUST : params (:$config) {
+# f
+# };
 
 ADJUSTPARAMS($params) {
     GetOptionsFromArray(
@@ -47,6 +51,8 @@ ADJUSTPARAMS($params) {
             #die "\$ARGV[0] has already been set to '$srvpath'" if $_set != 0;
             fatal "Directory has already been set to '$srvpath'."
               if $_set = 1 && $srvpath eq path($barearg);
+
+            $srvpath = $barearg;
         }
     );
 
@@ -78,6 +84,8 @@ unless (caller) {
     require Plack::Runner;
     my $runner = Plack::Runner->new;
     $runner->parse_options( $cliopt->{ssl}->%*, @ARGV );
+
+    dmsg $app, $srvdir, $cliopt, $runner;
 
     $runner->run($app);
 

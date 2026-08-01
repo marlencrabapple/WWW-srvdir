@@ -17,8 +17,8 @@ use Plack::MIME;
 use List::Util qw'first all';
 use IO::Handle::Common;
 
-use WWW::srvdir::User;
-use WWW::srvdir::Util;
+# use WWW::srvdir::User;
+# use WWW::srvdir::Util;
 
 Plack::MIME->set_fallback( sub { ( by_suffix $_[0] )[0] } );
 
