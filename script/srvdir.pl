@@ -12,14 +12,15 @@ use v5.40;
 use lib 'lib';
 
 use Path::Tiny;
-use Getopt::Long qw'GetOptionsFromArray :config bundling auto_abbrev';
+use Getopt::Long
+  qw'GetOptionsFromArray :config bundling passthrough auto_abbrev';
 use Plack::Runner;
 use IO::Handle::Common;
 use WWW::srvdir;
 
 field $argv : param;
 field $app;
-field $srvpath : param(srvpath) = path("./")->absolute;
+field $srvpath : param(srvpath) = undef;
 
 field $cliopt : param(dest) : reader = {
     ssl => {
@@ -44,8 +45,8 @@ ADJUSTPARAMS($params) {
 
         # Auth Basic
         'user|username:s',
-        'pwhash|password-hash|crypt:s', # argon2 hash
-        'login|login-credentials|credentials', # user:pwhash
+        'pwhash|password-hash|crypt:s',           # argon2 hash
+        'login|login-credentials|credentials',    # user:pwhash
 
         'verbose+',
         'debug', 'help',
@@ -56,17 +57,22 @@ ADJUSTPARAMS($params) {
         '<>' => sub ($barearg) {
             state $_set //= 0;
 
-            #die "\$ARGV[0] has already been set to '$srvpath'" if $_set != 0;
-            fatal "Directory has already been set to '$srvpath'."
-              if $_set = 1 && $srvpath eq path($barearg);
+            fatal
+"Warning: Directory has already been set via positional paramenter to '$srvpath'."
+              if $_set == 1;
 
-            say STDERR "Root directory changed from $srvpath -> $barearg";
+            say STDERR "Root directory changed from '$srvpath' -> '$barearg'"
+              if $srvpath;
+
             $srvpath = $barearg;
+            $_set++;
         }
     );
 
+    $srvpath //= path("./")->absolute;
+
     $app = WWW::srvdir->new(
-        $cliopt->%{qw'username pwhash debug verbose config'},
+        $cliopt->%{qw'user pwhash debug verbose config'},
         cliopt => $cliopt,
         root   => $srvpath,
         mount  => '/'
