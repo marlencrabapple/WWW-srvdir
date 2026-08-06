@@ -9,11 +9,11 @@ class srvdir;    # : strict(params);
 use utf8;
 use v5.40;
 
-use lib 'lib';
+# use lib 'lib';
 
 use Path::Tiny;
 use Getopt::Long
-  qw'GetOptionsFromArray :config bundling passthrough auto_abbrev';
+  qw(GetOptionsFromArray :config no_ignore_case auto_abbrev passthrough bundling long_prefix_pattern=--?);
 use Plack::Runner;
 use IO::Handle::Common;
 use WWW::srvdir;
@@ -41,18 +41,18 @@ ADJUSTPARAMS($params) {
         ,    # leaf cert with intermediates/trust chain in a single file
 
         # 'intermediates|chain'
-        'keyfile=s',
+        'keyfile:s',
 
         # Auth Basic
         'user|username:s',
         'pwhash|password-hash|crypt:s',           # argon2 hash
-        'login|login-credentials|credentials',    # user:pwhash
+        'login|login-credentials|credentials:s',    # user:pwhash
 
         'verbose+',
         'debug', 'help',
         'version',
 
-        'config|config-file|config-path=s@',
+        'config|config-file|config-path:s@',
 
         '<>' => sub ($barearg) {
             state $_set //= 0;

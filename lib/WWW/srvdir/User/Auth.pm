@@ -7,19 +7,27 @@ role WWW::srvdir::User::Auth;
 use v5.40;
 use utf8;
 
-use System::Info;
+# use System::Info 'sysinfo_hash';
 use Const::Fast;
 use Net::SSLeay;
 use Crypt::Argon2 qw'argon2_pass';
 use IO::Handle::Common;
 use Syntax::Keyword::MultiSub;
+use Const::Fast;
 
 const our $ARGON2_RE => qr/^\$argon2,\$v=[],\$v=[],\$m=[],t=[],p=[]\$[.+]$/x;
-const our $SYSINFO   => System::Info->new;
+
+# const our $SYSINFO   => sysinfo_hash;
+#const $CPUNO =>
 const our %ARGON2_DEFAULT => (
-    t_cost     => 3,
-    m_factor   => '64M',
-    parallel   => $SYSINFO->ncore,
+    t_cost   => 3,
+    m_factor => '64M',
+
+    # parallel   => $$SYSINFO{cpu_cores},
+    parallel => (
+        map { chomp $_; $_ }
+          (`getconf _NPROCESSORS_ONLN 2>/dev/null || sysctl -n hw.ncpu`)
+    )[0],
     tag_size   => 32,
     type       => 'argon2id',
     salt_bytes => 512
@@ -27,29 +35,10 @@ const our %ARGON2_DEFAULT => (
 
 use subs 'hashpass';
 
-field $t_cost   : param : reader = 3;
-field $m_factor : param : reader = '32M';
-field $parallel : param : reader = $SYSINFO->ncpu;
-field $tag_size : param : reader = 16;
-
-# multi sub hashpass ( $pass, $salt, $_cost, $parallel, $tag_size ) {
-#     fatal "Given password string appears to be an argon2 hash already"
-#       if $pass =~ $ARGON2_RE;
-
-#     unless ( $salt ) {
-#         my $rv =
-#           Net::SSLeay::RAND_bytes( salt, $saltbytes // 1024 );
-
-#         fatal "$rv: Could not generate random bytes for salt."
-#           unless $rv == 1;
-#     }
-
-#     # argon2_pass( $pass, $salt ,( map { $opt{$_} // $ } keys %opt ) );
-# }
-
-# multi sub hashpass ( $invoke, $pass,  $salt, $_cost, $parallel, $tag_size) {
-
-# }
+field $t_cost   : param : reader = $ARGON2_DEFAULT{t_cost};
+field $m_factor : param : reader = $ARGON2_DEFAULT{m_factor};
+field $parallel : param : reader = $ARGON2_DEFAULT{parallel};
+field $tag_size : param : reader = $ARGON2_DEFAULT{tag_size};
 
 sub hashpass (@opt) {
     my @argon2opt = ();
@@ -82,7 +71,7 @@ sub hashpass (@opt) {
 
     @argon2opt = (
         $type, $pass, $salt,
-        map { $opt{$_} // $ARGON2_DEFAULT{$_} }
+        map { ( $opt{$_} // $ARGON2_DEFAULT{$_} ) }
           (qw't_cost m_factor parallel tag_size')
     );
 
