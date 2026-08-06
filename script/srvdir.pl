@@ -21,8 +21,6 @@ field $argv : param;
 field $app;
 field $srvpath : param(srvpath) = path("./")->absolute;
 
-# field $config_file;
-
 field $cliopt : param(dest) : reader = {
     ssl => {
         'ssl'        => 1,
@@ -30,21 +28,31 @@ field $cliopt : param(dest) : reader = {
     },
 };
 
-# ADJUST : params (:$config) {
-# f
-# };
-
 ADJUSTPARAMS($params) {
     GetOptionsFromArray(
         $argv, $cliopt,
 
-        'ssl|tls|x509',
+        'ssl|tls|x509:s',    # = server, client, mutual (default: server)
+        'certfile|certificate:s',
+        'validpath|intermediates|trustchain:s@'
+        , # intermediate(s) as separate files (we may produce more specialized bundles similar to cfssl)
+        'certbundle:s'
+        ,    # leaf cert with intermediates/trust chain in a single file
+
+        # 'intermediates|chain'
+        'keyfile=s',
+
+        # Auth Basic
         'user|username:s',
-        'pwhash|password-hash:s',
-        'verbose',
+        'pwhash|password-hash|crypt:s', # argon2 hash
+        'login|login-credentials|credentials', # user:pwhash
+
+        'verbose+',
         'debug', 'help',
         'version',
-        'config|config-file|config-path=s',
+
+        'config|config-file|config-path=s@',
+
         '<>' => sub ($barearg) {
             state $_set //= 0;
 
@@ -52,6 +60,7 @@ ADJUSTPARAMS($params) {
             fatal "Directory has already been set to '$srvpath'."
               if $_set = 1 && $srvpath eq path($barearg);
 
+            say STDERR "Root directory changed from $srvpath -> $barearg";
             $srvpath = $barearg;
         }
     );

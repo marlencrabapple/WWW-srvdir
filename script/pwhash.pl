@@ -1,0 +1,41 @@
+#!/usr/bin/env perl
+
+use Object::Pad ':experimental(:all)';
+
+package pwhash;
+
+use lib 'lib';
+
+class pwhash : does(WWW::srvdir::User);
+
+use utf8;
+use v5.40;
+
+use IO::Handle::Common;
+use Getopt::Long
+  qw(GetOptionsFromArray :config no_ignore_case auto_abbrev bundling long_prefix_pattern=--?);
+
+method from : common ($argv = \@ARGV) {
+    my %cliopt;
+
+    GetOptionsFromArray(
+        $argv,
+        \%cliopt,
+        'salt_bytes|salt-bytes|saltbytes',
+        'salt',
+        '<>' => sub ($pass) {
+            $cliopt{pass} = $pass;
+        }
+    );
+
+    dmsg \%cliopt;
+
+    WWW::srvdir::User::Auth::hashpass( delete $cliopt{pass},
+        ( salt => ( delete $cliopt{salt} // undef ) ),
+        %cliopt )    #%cliopt{qw'salt_bytes'} );
+}
+
+package main;
+
+my $crypt = pwhash->from( \@ARGV );
+say $crypt;

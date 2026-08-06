@@ -88,3 +88,10 @@ method merge_config ( $data_merge, $dest = $data ) {
 method config (%opt) {
     $data;
 }
+
+const our $config_builtin_toml => <<'...';
+[global]
+charset = 'UTF-8'
+
+...
+
