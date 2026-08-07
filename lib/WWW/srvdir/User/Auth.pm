@@ -12,7 +12,6 @@ use Const::Fast;
 use Net::SSLeay;
 use Crypt::Argon2 qw'argon2_pass';
 use IO::Handle::Common;
-use Syntax::Keyword::MultiSub;
 use Const::Fast;
 
 const our $ARGON2_RE => qr/^\$argon2,\$v=[],\$v=[],\$m=[],t=[],p=[]\$[.+]$/x;

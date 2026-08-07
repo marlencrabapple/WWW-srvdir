@@ -1,10 +1,6 @@
 #!/usr/bin/env perl
 
-use Object::Pad ':experimental(:all)';
-
-package srvdir;
-
-class srvdir;    # : strict(params);
+package srvdir::CLI;
 
 use utf8;
 use v5.40;
@@ -13,25 +9,19 @@ use v5.40;
 
 use Path::Tiny;
 use Getopt::Long
-  qw(GetOptionsFromArray :config no_ignore_case auto_abbrev passthrough bundling long_prefix_pattern=--?);
-use Plack::Runner;
+  qw(GetOptionsFromArray :config no_ignore_case auto_abbrev bundling long_prefix_pattern=--?);
+
+use Const::Fast;
 use IO::Handle::Common;
 use WWW::srvdir;
 
-field $argv : param;
-field $app;
-field $srvpath : param(srvpath) = undef;
+sub run ( $argv = \@ARGV ) {
+    my %cliopt = ();
 
-field $cliopt : param(dest) : reader = {
-    ssl => {
-        'ssl'        => 1,
-        'ssl-server' => 1
-    },
-};
+    const my %pos_dest => ( 0 => 'root', 1 => 'mount' );
 
-ADJUSTPARAMS($params) {
     GetOptionsFromArray(
-        $argv, $cliopt,
+        $argv, \%cliopt,
 
         'ssl|tls|x509:s',    # = server, client, mutual (default: server)
         'certfile|certificate:s',
@@ -45,7 +35,7 @@ ADJUSTPARAMS($params) {
 
         # Auth Basic
         'user|username:s',
-        'pwhash|password-hash|crypt:s',           # argon2 hash
+        'pwhash|password-hash|crypt:s',             # argon2 hash
         'login|login-credentials|credentials:s',    # user:pwhash
 
         'verbose+',
@@ -55,57 +45,42 @@ ADJUSTPARAMS($params) {
         'config|config-file|config-path:s@',
 
         '<>' => sub ($barearg) {
-            state $_set //= 0;
-
-            fatal
-"Warning: Directory has already been set via positional paramenter to '$srvpath'."
-              if $_set == 1;
-
-            say STDERR "Root directory changed from '$srvpath' -> '$barearg'"
-              if $srvpath;
-
-            $srvpath = $barearg;
-            $_set++;
+            state $pos //= 0;
+            $cliopt{ $pos_dest{$pos} } = $barearg;
         }
     );
 
-    $srvpath //= path("./")->absolute;
-
-    $app = WWW::srvdir->new(
-        $cliopt->%{qw'user pwhash debug verbose config'},
-        cliopt => $cliopt,
-        root   => $srvpath,
-        mount  => '/'
+    WWW::srvdir->new(
+        map { $_ =~ s/-/_/; ( $_ => $cliopt{$_} ) }
+          keys %cliopt
     );
+
 }
 
-method to_app {
-    $app->to_app, $self;
-}
-
-package srvdir::cli;
-
-class srvdir::cli;
+package srvdir::Runner;
 
 use utf8;
 use v5.40;
 
 use IO::Handle::Common;
 
-our ( $app, $srvdir ) = srvdir->new( argv => \@ARGV )->to_app;
-our $cliopt = $srvdir->cliopt;
+# our ( $psgi, $srvdir ) = srvdir::CLI->run( \@ARGV )->to_app;
+# our $cliopt = $srvdir->cliopt;
+
+my $srvdir = srvdir::CLI::run( \@ARGV );
+my $psgi   = $srvdir->to_psgi;
 
 unless (caller) {
     require Plack::Runner;
     my $runner = Plack::Runner->new;
-    $runner->parse_options( $cliopt->{ssl}->%*, @ARGV );
+    $runner->parse_options(@ARGV);
 
-    dmsg $app, $srvdir, $cliopt, $runner;
+    dmsg $psgi, $srvdir, $runner;
 
-    $runner->run($app);
+    $runner->run($psgi);
 
     error "$! ($?)" if $? > 0;
     exit $?;
 }
 
-return $app;
+return $psgi

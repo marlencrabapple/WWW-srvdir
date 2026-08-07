@@ -22,12 +22,15 @@ use IO::Handle::Common;
 
 Plack::MIME->set_fallback( sub { ( by_suffix $_[0] )[0] } );
 
-field $debug  : accessor //= $ENV{DEBUG};
-field $root   : param    //= '.';
-field $mount  : param    //= '/';
-field $cliopt : param = undef;
+field $debug : accessor //= $ENV{DEBUG};
+field $root  : param    //= '.';
+field $mount : param    //= '/';
 
-field $app;
+field $verbose : param : 0
+
+  # field $cliopt : param = undef;
+
+  field $app;
 field $builder { Plack::Builder->new }
 
 ADJUST {
