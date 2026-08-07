@@ -25,7 +25,7 @@ Plack::MIME->set_fallback( sub { ( by_suffix $_[0] )[0] } );
 field $debug   : param : accessor //= $ENV{DEBUG};
 field $root    : param //= '.';
 field $mount   : param //= '/';
-field $verbose : param : 0;
+field $verbose : param //= 0;
 
 field $app;
 field $builder { Plack::Builder->new }
