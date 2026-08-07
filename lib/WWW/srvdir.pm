@@ -17,20 +17,17 @@ use Plack::MIME;
 use List::Util qw'first all';
 use IO::Handle::Common;
 
-# use WWW::srvdir::User;
-# use WWW::srvdir::Util;
+use WWW::srvdir::User;
+use WWW::srvdir::Util;
 
 Plack::MIME->set_fallback( sub { ( by_suffix $_[0] )[0] } );
 
-field $debug : accessor //= $ENV{DEBUG};
-field $root  : param    //= '.';
-field $mount : param    //= '/';
+field $debug   : param : accessor //= $ENV{DEBUG};
+field $root    : param //= '.';
+field $mount   : param //= '/';
+field $verbose : param : 0;
 
-field $verbose : param : 0
-
-  # field $cliopt : param = undef;
-
-  field $app;
+field $app;
 field $builder { Plack::Builder->new }
 
 ADJUST {

@@ -5,17 +5,14 @@ package srvdir::CLI;
 use utf8;
 use v5.40;
 
-# use lib 'lib';
-
 use Path::Tiny;
 use Getopt::Long
-  qw(GetOptionsFromArray :config no_ignore_case auto_abbrev bundling long_prefix_pattern=--?);
-
+  qw(GetOptionsFromArray :config no_ignore_case bundling passthrough autoabbrev);
 use Const::Fast;
 use IO::Handle::Common;
 use WWW::srvdir;
 
-sub run ( $argv = \@ARGV ) {
+sub configure ( $argv //= \@ARGV ) {
     my %cliopt = ();
 
     const my %pos_dest => ( 0 => 'root', 1 => 'mount' );
@@ -23,15 +20,16 @@ sub run ( $argv = \@ARGV ) {
     GetOptionsFromArray(
         $argv, \%cliopt,
 
+        # 'port:i',
         'ssl|tls|x509:s',    # = server, client, mutual (default: server)
-        'certfile|certificate:s',
+        'certfile|certificate|ssl-cert-file|ssl-certfile:s',
         'validpath|intermediates|trustchain:s@'
         , # intermediate(s) as separate files (we may produce more specialized bundles similar to cfssl)
         'certbundle:s'
         ,    # leaf cert with intermediates/trust chain in a single file
 
-        # 'intermediates|chain'
-        'keyfile:s',
+        # 'intermediates|chain:s'
+        'keyfile|key|ssl-key-file|ssl-keyfile:s',
 
         # Auth Basic
         'user|username:s',
@@ -46,9 +44,17 @@ sub run ( $argv = \@ARGV ) {
 
         '<>' => sub ($barearg) {
             state $pos //= 0;
+
+            error "Positional arguments for 'root' and and 'mount' have already"
+              . " been set.\n Ignoring '$barearg'."
+              if $pos > 1;
+
             $cliopt{ $pos_dest{$pos} } = $barearg;
+            $pos++;
         }
     );
+
+    shift @$argv if ( @$argv[0] eq '--' );
 
     WWW::srvdir->new(
         map { $_ =~ s/-/_/; ( $_ => $cliopt{$_} ) }
@@ -64,18 +70,16 @@ use v5.40;
 
 use IO::Handle::Common;
 
-# our ( $psgi, $srvdir ) = srvdir::CLI->run( \@ARGV )->to_app;
-# our $cliopt = $srvdir->cliopt;
-
-my $srvdir = srvdir::CLI::run( \@ARGV );
+my $srvdir = srvdir::CLI::configure( \@ARGV );
 my $psgi   = $srvdir->to_psgi;
 
 unless (caller) {
     require Plack::Runner;
+
     my $runner = Plack::Runner->new;
     $runner->parse_options(@ARGV);
 
-    dmsg $psgi, $srvdir, $runner;
+    dmsg \@ARGV, $psgi, $srvdir, $runner;
 
     $runner->run($psgi);
 
