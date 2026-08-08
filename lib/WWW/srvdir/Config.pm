@@ -9,12 +9,13 @@ use v5.40;
 use TOML::Tiny;    #'from_toml';
 use Path::Tiny;
 use File::HomeDir;
+use File::ConfigDir;
 use Const::Fast;
 use IO::Handle::Common;
 use WWW::srvdir::Util;
 
 const our @CONFIGDIR_DEFAULT =>
-  ( File::HomeDir->my_data, path("./")->absolute, );
+  ( File::ConfigDir::xdg_config_home, path("./")->absolute, );
 
 field $toml = TOML::Tiny->new;
 field $file = [
