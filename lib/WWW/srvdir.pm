@@ -10,6 +10,7 @@ use v5.40;
 our $VERSION = "0.01";
 
 use Path::Tiny;
+use List::Util 'all';
 use MIME::Types 'by_suffix';
 use Plack::Builder;
 use Plack::App::Directory;
@@ -30,15 +31,19 @@ field $verbose : param //= 0;
 field $app;
 field $builder { Plack::Builder->new }
 
-ADJUST {
-    if (   scalar $self->userdb->@* == 0
-        && scalar( grep { $_ } @ENV{qw'SRVDIR_USER SRVDIR_PASS'} ) == 2 )
-    {
+ADJUSTPARAMS($param) {
+    if ( all { $_ } @$param{qw'user pwhash'} ) {
+        $self->add_user( @$param{qw'user pwhash'} );
+    }
+
+    # if (   scalar $self->userdb->@* == 0
+    if ( all { $_ } @ENV{qw'SRVDIR_USER SRVDIR_PASS'} ) {
         $self->add_user( $ENV{SRVDIR_USER}, $ENV{SRVDIR_PASS} );
     }
 
-    foreach my $user ( $self->config->{userdb}->@* ) {
-        $self->add_user( delete $$user{user}, %$user );
+    foreach my $user ( $self->config->{user}->@* ) {
+        $self->add_user( $$user{name},
+            map { ( $_ => $$user{$_} ) } grep { $_ ne 'name' } keys %$user );
     }
 }
 
@@ -50,11 +55,6 @@ method to_app {
     $self->to_psgi(@_);
 }
 
-method auth_basic ( $user, $pass, $env ) {
-    first { $$_->user eq $user && argon2_verify( $pass, $$_->crypt ) }
-      $self->userdb->@*;
-}
-
 ADJUST {
     $app = Plack::App::Directory->new( root => $root );
 
@@ -63,8 +63,17 @@ ADJUST {
         $builder->add_middleware('StackTrace');
         $builder->add_middleware(
             'Auth::Basic',
-            authen_cb => sub ( $user, $pass, $env ) {
-                $self->auth_basic( $user, $pass, $env );
+            authenticator => sub ( $user, $pass, $env ) {
+
+                foreach my ($dbuser) ( $self->userdb->@* ) {
+                    if ( $user eq $$dbuser{user}
+                        && WWW::srvdir->valid_pass( $pass, $$dbuser{crypt} ) )
+                    {
+                        return 1;
+                    }
+                }
+                return 0;
+
             }
         ) if scalar $self->userdb->@*;
     }

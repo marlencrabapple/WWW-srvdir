@@ -10,14 +10,19 @@ use utf8;
 # use System::Info 'sysinfo_hash';
 use Const::Fast;
 use Net::SSLeay;
-use Crypt::Argon2 qw'argon2_pass';
+use Crypt::Argon2 qw'argon2_pass argon2_verify';
 use IO::Handle::Common;
 use Const::Fast;
+use MIME::Base64 'encode_base64';
 
-const our $ARGON2_RE => qr/^\$argon2,\$v=[],\$v=[],\$m=[],t=[],p=[]\$[.+]$/x;
+const our $ARGON2_RE => qr/^
+    \$argon2(i|d|id)
+    \$v=([0-9]+)
+    \$m=([0-9]+),
+    t=([0-9]+),
+    p=([0-9]+)
+\$(.+)$/xx;
 
-# const our $SYSINFO   => sysinfo_hash;
-#const $CPUNO =>
 const our %ARGON2_DEFAULT => (
     t_cost   => 3,
     m_factor => '64M',
@@ -31,8 +36,6 @@ const our %ARGON2_DEFAULT => (
     type       => 'argon2id',
     salt_bytes => 512
 );
-
-use subs 'hashpass';
 
 field $t_cost   : param : reader = $ARGON2_DEFAULT{t_cost};
 field $m_factor : param : reader = $ARGON2_DEFAULT{m_factor};
@@ -63,7 +66,7 @@ sub hashpass (@opt) {
         my $rv =
           Net::SSLeay::RAND_bytes( $salt,
             $opt{salt_bytes} // $ARGON2_DEFAULT{salt_bytes} );
-
+        $salt = encode_base64( $salt, "" );
         fatal "$rv: Could not generate random bytes for salt."
           unless $rv == 1;
     }
@@ -74,21 +77,20 @@ sub hashpass (@opt) {
           (qw't_cost m_factor parallel tag_size')
     );
 
-    dmsg \@argon2opt;
-
     argon2_pass(@argon2opt);
 }
 
-method authenticate ( $user, $pass, %opt ) {
-    if ( my $user = $self->user($user) ) {
-        return $self->verify( $pass,
-            $self->user($user)->{ ( $opt{crypt_key} // 'crypt' ) } );
-    }
-    undef;
-}
+# method authenticate ( $user, $pass, %opt ) {
+#     if ( my $user = $self->user($user) ) {
+#         return $self->verify( $pass,
+#             $self->user($user)->{ ( $opt{crypt_key} // 'crypt' ) } );
+#     }
+#     undef;
+# }
 
-method verify ( $pass, $crypt, %opt ) {
-    argon2_verify( $pass, $crypt, );
+method valid_pass : common ( $pass, $crypt, %opt ) {
+    my $valid = argon2_verify( $crypt, $pass );
+    $valid;
 }
 
 method is_argon2 : common ($str) {

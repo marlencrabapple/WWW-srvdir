@@ -5,6 +5,8 @@ package srvdir::CLI;
 use utf8;
 use v5.40;
 
+use lib 'lib';
+
 use Path::Tiny;
 use Getopt::Long
   qw(GetOptionsFromArray :config no_ignore_case bundling passthrough autoabbrev);
@@ -78,8 +80,6 @@ unless (caller) {
 
     my $runner = Plack::Runner->new;
     $runner->parse_options(@ARGV);
-
-    dmsg \@ARGV, $psgi, $srvdir, $runner;
 
     $runner->run($psgi);
 

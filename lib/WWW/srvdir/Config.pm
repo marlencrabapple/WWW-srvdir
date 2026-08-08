@@ -23,10 +23,6 @@ field $file = [
 ];
 field $data : reader = {};
 
-APPLY {
-    # dmsg @CONFIGDIR_DEFAULT, \%$class::, \%ENV,
-};
-
 # Default configuration files. May warn on error but will fall back to minimal
 # inline config
 ADJUST {
@@ -37,9 +33,9 @@ ADJUST {
 ADJUST : params (:$config = []) {
     $self->load_config($_)
       for @$config;
-  }
+};
 
-  method try_config ( $file, %opt ) {
+method try_config ( $file, %opt ) {
     $self->load_config( $file, %opt, try => 1 );
 }
 
@@ -51,11 +47,13 @@ method load_config ( $file, %opt ) {
         fatal "Config file '$file' does not exist.";
     }
 
-    my $data_merge = $toml->from_toml( path($path)->slurp_utf8 );
-    merge_config($data_merge);
+    my $data_merge = $toml->decode( path($path)->slurp_utf8 );
+    $self->merge_config($data_merge);
 }
 
 method merge_config ( $data_merge, $dest = $data ) {
+
+    # dmsg $data_merge, $dest;
     foreach my ( $key, $val ) ( $data_merge->%* ) {
         if ( my $val_curr = $$dest{$key} ) {
             if (   ( !ref $val && !ref $val_curr )
@@ -80,6 +78,9 @@ method merge_config ( $data_merge, $dest = $data ) {
                   . "' but new value has type '"
                   . ref $val . "'";
             }
+        }
+        else {
+            $$dest{$key} = $val;
         }
     }
     $dest;
