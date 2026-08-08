@@ -9,6 +9,13 @@
 /carton.lock
 /.carton/
 /local/
+/fatlib/
+/vendor/
+/bin/
+/fatpack/
+*.toml
+/.carmel/
+/authors/
 
 nytprof.out
 nytprof/
