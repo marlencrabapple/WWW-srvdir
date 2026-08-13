@@ -36,9 +36,10 @@ ADJUSTPARAMS($param) {
         $self->add_user( @$param{qw'user pwhash'} );
     }
 
-    # if (   scalar $self->userdb->@* == 0
-    if ( all { $_ } @ENV{qw'SRVDIR_USER SRVDIR_PASS'} ) {
-        $self->add_user( $ENV{SRVDIR_USER}, $ENV{SRVDIR_PASS} );
+    # if (scalar $self->userdb->@* == 0
+    #     &&  all { $_ } @ENV{qw'SRVDIR_USER SRVDIR_PWHASH'}
+    if ( all { $_ } @ENV{qw'SRVDIR_USER SRVDIR_PWHASH'} ) {
+        $self->add_user( $ENV{SRVDIR_USER}, $ENV{SRVDIR_PWHASH} );
     }
 
     foreach my $user ( $self->config->{user}->@* ) {
@@ -61,22 +62,23 @@ ADJUST {
     if ( $ENV{DEBUG} || $self->debug ) {
         $builder->add_middleware('Debug');
         $builder->add_middleware('StackTrace');
-        $builder->add_middleware(
-            'Auth::Basic',
-            authenticator => sub ( $user, $pass, $env ) {
-
-                foreach my ($dbuser) ( $self->userdb->@* ) {
-                    if ( $user eq $$dbuser{user}
-                        && WWW::srvdir->valid_pass( $pass, $$dbuser{crypt} ) )
-                    {
-                        return 1;
-                    }
-                }
-                return 0;
-
-            }
-        ) if scalar $self->userdb->@*;
     }
+
+    $builder->add_middleware(
+        'Auth::Basic',
+        authenticator => sub ( $user, $pass, $env ) {
+
+            foreach my ($dbuser) ( $self->userdb->@* ) {
+                if ( $user eq $$dbuser{user}
+                    && WWW::srvdir->valid_pass( $pass, $$dbuser{crypt} ) )
+                {
+                    return 1;
+                }
+            }
+            return 0;
+
+        }
+    ) if scalar $self->userdb->@*;
 
     $builder->mount( $mount => $app->to_app );
 
