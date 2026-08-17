@@ -6,7 +6,7 @@ package pwhash;
 
 use lib 'lib';
 
-class pwhash : does(WWW::srvdir::User);
+class pwhash : does(WWW::srvpath::User);
 
 use utf8;
 use v5.40;
@@ -30,7 +30,7 @@ method from : common ($argv = \@ARGV) {
 
     dmsg \%cliopt;
 
-    WWW::srvdir::User::Auth::hashpass( delete $cliopt{pass},
+    WWW::srvpath::User::Auth::hashpass( delete $cliopt{pass},
         ( salt => ( delete $cliopt{salt} // undef ) ),
         %cliopt )    #%cliopt{qw'salt_bytes'} );
 }

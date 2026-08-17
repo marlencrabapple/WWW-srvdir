@@ -35,7 +35,7 @@ cover_db/
 
 MYMETA.*
 
-/WWW-srvdir-*
+/WWW-srvpath-*
 
 ._*
 .DS_Store

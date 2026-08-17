@@ -4,11 +4,11 @@ requires 'meta';
 requires 'Const::Fast';
 requires 'Crypt::Argon2';
 requires 'Cwd';
-requires 'File::HomeDir';
+#requires 'File::HomeDir';
 requires 'File::ConfigDir';
 requires 'IO::Handle::Common';
 requires 'IO::Socket::SSL';
-requires 'IPC::Nosh';
+requires 'IPC::Nosh', '0.01.3';
 requires 'MIME::Types';
 requires 'Net::SSLeay';
 requires 'Object::Pad';
@@ -21,7 +21,8 @@ requires 'Syntax::Keyword::Dynamically';
 requires 'TOML::Tiny';
 requires 'Time::Moment';
 requires 'Time::Piece';
-requires 'Frame';
+#requires 'Frame';
+requires 'Server::Starter';
 
 on 'test' => sub {
     requires 'Test::More', '0.98'

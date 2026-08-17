@@ -2,7 +2,7 @@ use Object::Pad ':experimental(:all)';
 
 package WWW::srvpath::Util;
 
-role WWW::srvpath::Util;    #: does(WWW::srvdir::Config);
+role WWW::srvpath::Util;    #: does(WWW::srvpath::Config);
 
 use utf8;
 use v5.40;

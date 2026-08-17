@@ -1,7 +1,7 @@
 use Object::Pad ':experimental(:all)';
 
 package WWW::srvpath::Config;
-role WWW::srvpath::Config : does(WWW::srvdir::Base) : does(WWW::srvdir::Util);
+role WWW::srvpath::Config : does(WWW::srvpath::Base) : does(WWW::srvpath::Util);
 
 use utf8;
 use v5.40;
@@ -19,7 +19,7 @@ const our @CONFIGDIR_DEFAULT =>
 
 field $toml = TOML::Tiny->new;
 field $file = [
-    map  { try_path("$_/srvdir.toml") }
+    map  { try_path("$_/srvpath.toml") }
     grep { $_ } @CONFIGDIR_DEFAULT
 ];
 field $data : reader = {};

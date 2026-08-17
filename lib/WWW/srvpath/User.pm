@@ -2,7 +2,7 @@ use Object::Pad ':experimental(:all)';
 
 package WWW::srvpath::User;
 
-role WWW::srvpath::User : does(WWW::srvdir::User::Auth);
+role WWW::srvpath::User : does(WWW::srvpath::User::Auth);
 
 use v5.40;
 use utf8;
