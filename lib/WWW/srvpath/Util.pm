@@ -1,8 +1,8 @@
 use Object::Pad ':experimental(:all)';
 
-package WWW::srvdir::Util;
+package WWW::srvpath::Util;
 
-role WWW::srvdir::Util;    #: does(WWW::srvdir::Config);
+role WWW::srvpath::Util;    #: does(WWW::srvpath::Config);
 
 use utf8;
 use v5.40;
@@ -20,7 +20,7 @@ use URI::Escape;
 use Net::Domain 'hostfqdn';
 use List::Util 'none';
 
-# use WWW::srvdir::Path;
+# use WWW::srvpath::Path;
 
 use Exporter;
 use parent 'Exporter';

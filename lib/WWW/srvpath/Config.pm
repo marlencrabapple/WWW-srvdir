@@ -1,25 +1,25 @@
 use Object::Pad ':experimental(:all)';
 
-package WWW::srvdir::Config;
-role WWW::srvdir::Config : does(WWW::srvdir::Base) : does(WWW::srvdir::Util);
+package WWW::srvpath::Config;
+role WWW::srvpath::Config : does(WWW::srvpath::Base) : does(WWW::srvpath::Util);
 
 use utf8;
 use v5.40;
 
 use TOML::Tiny;    #'from_toml';
 use Path::Tiny;
-use File::HomeDir;
+#use File::HomeDir;
 use File::ConfigDir;
 use Const::Fast;
 use IO::Handle::Common;
-use WWW::srvdir::Util;
+use WWW::srvpath::Util;
 
 const our @CONFIGDIR_DEFAULT =>
   ( File::ConfigDir::xdg_config_home, path("./")->absolute, );
 
 field $toml = TOML::Tiny->new;
 field $file = [
-    map  { try_path("$_/srvdir.toml") }
+    map  { try_path("$_/srvpath.toml") }
     grep { $_ } @CONFIGDIR_DEFAULT
 ];
 field $data : reader = {};

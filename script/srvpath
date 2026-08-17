@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-package srvdir::CLI;
+package srvpath::CLI;
 
 use utf8;
 use v5.40;
@@ -12,7 +12,7 @@ use Getopt::Long
   qw(GetOptionsFromArray :config no_ignore_case bundling passthrough autoabbrev);
 use Const::Fast;
 use IO::Handle::Common;
-use WWW::srvdir;
+use WWW::srvpath;
 
 sub configure ( $argv //= \@ARGV ) {
     my %cliopt = ();
@@ -58,22 +58,22 @@ sub configure ( $argv //= \@ARGV ) {
 
     shift @$argv if ( @$argv[0] eq '--' );
 
-    WWW::srvdir->new(
+    WWW::srvpath->new(
         map { $_ =~ s/-/_/; ( $_ => $cliopt{$_} ) }
           keys %cliopt
     );
 
 }
 
-package srvdir::Runner;
+package srvpath::Runner;
 
 use utf8;
 use v5.40;
 
 use IO::Handle::Common;
 
-my $srvdir = srvdir::CLI::configure( \@ARGV );
-my $psgi   = $srvdir->to_psgi;
+my $srvpath = srvpath::CLI::configure( \@ARGV );
+my $psgi    = $srvpath->to_psgi;
 
 unless (caller) {
     require Plack::Runner;

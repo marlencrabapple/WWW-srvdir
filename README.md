@@ -1,14 +1,14 @@
 # NAME
 
-WWW::srvdir - It's new $module
+WWW::srvpath - It's new $module
 
 # SYNOPSIS
 
-    use WWW::srvdir;
+    use WWW::srvpath;
 
 # DESCRIPTION
 
-WWW::srvdir is ...
+WWW::srvpath is ...
 
 # LICENSE
 

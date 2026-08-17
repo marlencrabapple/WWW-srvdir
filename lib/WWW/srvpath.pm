@@ -1,8 +1,8 @@
 use Object::Pad ':experimental(:all)';
 
-package WWW::srvdir;
+package WWW::srvpath;
 
-class WWW::srvdir : does(WWW::srvdir::Config) : does(WWW::srvdir::User);
+class WWW::srvpath : does(WWW::srvpath::Config) : does(WWW::srvpath::User);
 
 use utf8;
 use v5.40;
@@ -18,8 +18,8 @@ use Plack::MIME;
 use List::Util qw'first all';
 use IO::Handle::Common;
 
-use WWW::srvdir::User;
-use WWW::srvdir::Util;
+use WWW::srvpath::User;
+use WWW::srvpath::Util;
 
 Plack::MIME->set_fallback( sub { ( by_suffix $_[0] )[0] } );
 
@@ -37,9 +37,9 @@ ADJUSTPARAMS($param) {
     }
 
     # if (scalar $self->userdb->@* == 0
-    #     &&  all { $_ } @ENV{qw'SRVDIR_USER SRVDIR_PWHASH'}
-    if ( all { $_ } @ENV{qw'SRVDIR_USER SRVDIR_PWHASH'} ) {
-        $self->add_user( $ENV{SRVDIR_USER}, $ENV{SRVDIR_PWHASH} );
+    #     &&  all { $_ } @ENV{qw'SRVPATH_USER SRVPATH_PWHASH'}
+    if ( all { $_ } @ENV{qw'SRVPATH_USER SRVPATH_PWHASH'} ) {
+        $self->add_user( $ENV{SRVPATH_USER}, $ENV{SRVPATH_PWHASH} );
     }
 
     foreach my $user ( $self->config->{user}->@* ) {
@@ -70,7 +70,7 @@ ADJUST {
 
             foreach my ($dbuser) ( $self->userdb->@* ) {
                 if ( $user eq $$dbuser{user}
-                    && WWW::srvdir->valid_pass( $pass, $$dbuser{crypt} ) )
+                    && WWW::srvpath->valid_pass( $pass, $$dbuser{crypt} ) )
                 {
                     return 1;
                 }
@@ -90,15 +90,15 @@ __END__
 
 =head1 NAME
 
-WWW::srvdir - It's new $module
+WWW::srvpath - It's new $module
 
 =head1 SYNOPSIS
 
-    use WWW::srvdir;
+    use WWW::srvpath;
 
 =head1 DESCRIPTION
 
-WWW::srvdir is ...
+WWW::srvpath is ...
 
 =head1 LICENSE
 

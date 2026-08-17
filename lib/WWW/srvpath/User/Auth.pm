@@ -1,8 +1,8 @@
 use Object::Pad ':experimental(:all)';
 
-package WWW::srvdir::User::Auth;
+package WWW::srvpath::User::Auth;
 
-role WWW::srvdir::User::Auth;
+role WWW::srvpath::User::Auth;
 
 use v5.40;
 use utf8;

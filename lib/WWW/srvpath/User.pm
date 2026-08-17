@@ -1,8 +1,8 @@
 use Object::Pad ':experimental(:all)';
 
-package WWW::srvdir::User;
+package WWW::srvpath::User;
 
-role WWW::srvdir::User : does(WWW::srvdir::User::Auth);
+role WWW::srvpath::User : does(WWW::srvpath::User::Auth);
 
 use v5.40;
 use utf8;
@@ -23,9 +23,9 @@ method add_user ( $name, @pass ) {
 
     if ( scalar @pass == 1 ) {
         $user{crypt} =
-          WWW::srvdir::User::Auth->is_argon2( $pass[0] )
+          WWW::srvpath::User::Auth->is_argon2( $pass[0] )
           ? $pass[0]
-          : WWW::srvdir::User::Auth::hashpass( $pass[0] );
+          : WWW::srvpath::User::Auth::hashpass( $pass[0] );
     }
     else {
         my %pass = @pass;
@@ -34,11 +34,11 @@ method add_user ( $name, @pass ) {
         my $crypt_key = $user{crypt_key} = $pass{crypt_key} //= 'crypt';
 
         if ( $pass{password} ) {
-            $user{crypt} = WWW::srvdir::User::Auth::hashpass( $pass{password} );
+            $user{crypt} = WWW::srvpath::User::Auth::hashpass( $pass{password} );
         }
         elsif ( $pass{$crypt_key} ) {
             fatal "Not a valid argon2 hash"
-              unless WWW::srvdir::User::Auth->is_argon2( $pass{$crypt_key} );
+              unless WWW::srvpath::User::Auth->is_argon2( $pass{$crypt_key} );
 
             $user{crypt} = $pass{$crypt_key};
         }
