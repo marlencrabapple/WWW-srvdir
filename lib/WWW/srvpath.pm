@@ -40,7 +40,7 @@ ADJUSTPARAMS($param) {
         $self->add_user( $ENV{SRVPATH_USER}, $ENV{SRVPATH_PWHASH} );
     }
 
-    foreach my $user ( $self->config->{user}->@* ) {
+    foreach my $user ( $self->config->{userdb}->@* ) {
         $self->add_user( $$user{name},
             map { ( $_ => $$user{$_} ) } grep { $_ ne 'name' } keys %$user );
     }

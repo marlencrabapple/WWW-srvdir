@@ -1,7 +1,6 @@
 use Object::Pad ':experimental(:all)';
 
 package WWW::srvpath::Util;
-
 role WWW::srvpath::Util;    #: does(WWW::srvpath::Config);
 
 use utf8;
@@ -10,7 +9,7 @@ use v5.40;
 no warnings 'experimental::re_strict';
 use re 'strict';
 
-use Path::Tiny;
+use Path::Try;
 use Const::Fast;
 use Time::HiRes;
 use Syntax::Keyword::Dynamically;
@@ -20,19 +19,11 @@ use URI::Escape;
 use Net::Domain 'hostfqdn';
 use List::Util 'none';
 
-# use WWW::srvpath::Path;
-
 use Exporter;
 use parent 'Exporter';
 
 our @EXPORT_OK = qw'path2uri epoch file_unique path_uri_encode';
 our @EXPORT    = @EXPORT_OK;
-
-# field $pathtiny = {};
-
-APPLY {
-    # dmsg [ caller 0 ], \@_, \%$class::;
-};
 
 sub epoch ( $join = '' ) {
     join $join, Time::HiRes::gettimeofday;

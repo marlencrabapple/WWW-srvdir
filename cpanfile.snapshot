@@ -1467,15 +1467,19 @@ DISTRIBUTIONS
     pathname: C/CR/CRABAPP/IO-Handle-Common-0.01-TRIAL.tar.gz
     provides:
       IO::Handle::Common 0.01
+      IO::Handle::Common::Base undef
       IO::Handle::Common::Handle undef
     requirements:
+      Class::Exporter 0
       Const::Fast 0
       Data::Dumper::Names 0
       Devel::StackTrace::WithLexicals 0
+      Devel::Trace 0
       FileHandle 0
       IO::Handle 0
       List::Util 0
       Module::Build::Tiny 0.034
+      Object::Pad 0
       PadWalker 0
       Path::Tiny 0
       perl v5.40.0
@@ -2262,30 +2266,6 @@ DISTRIBUTIONS
       WWW::Form::UrlEncoded 0.23
       parent 0
       perl 5.012000
-  Plack-Middleware-ReverseProxy-0.16
-    pathname: M/MI/MIYAGAWA/Plack-Middleware-ReverseProxy-0.16.tar.gz
-    provides:
-      Plack::Middleware::ReverseProxy 0.16
-    requirements:
-      ExtUtils::MakeMaker 6.59
-      Plack 0.9988
-      Plack::Middleware 0
-      Plack::Request 0
-      Test::More 0
-      parent 0
-      perl 5.008001
-  Plack-Middleware-Rewrite-2.102
-    pathname: A/AR/ARISTOTLE/Plack-Middleware-Rewrite-2.102.tar.gz
-    provides:
-      Plack::Middleware::Rewrite 2.102
-    requirements:
-      Plack 0.9942
-      Plack::Middleware 0
-      Plack::Request 0
-      Plack::Util 0
-      Plack::Util::Accessor 0
-      overload 0
-      perl 5.006
   Proc-Wait3-0.05
     pathname: C/CT/CTILMES/Proc-Wait3-0.05.tar.gz
     provides:

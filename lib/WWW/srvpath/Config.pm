@@ -1,21 +1,20 @@
 use Object::Pad ':experimental(:all)';
 
 package WWW::srvpath::Config;
-role WWW::srvpath::Config : does(WWW::srvpath::Base) : does(WWW::srvpath::Util);
+role WWW::srvpath::Config : does(WWW::srvpath::Base);
 
 use utf8;
 use v5.40;
 
 use TOML::Tiny;    #'from_toml';
 use Path::Tiny;
-#use File::HomeDir;
 use File::ConfigDir;
 use Const::Fast;
 use IO::Handle::Common;
 use WWW::srvpath::Util;
 
 const our @CONFIGDIR_DEFAULT =>
-  ( File::ConfigDir::xdg_config_home, path("./")->absolute, );
+  ( path(File::ConfigDir::xdg_config_home)->absolute, path("./")->absolute, );
 
 field $toml = TOML::Tiny->new;
 field $file = [
@@ -27,7 +26,7 @@ field $data : reader = {};
 # Default configuration files. May warn on error but will fall back to minimal
 # inline config
 ADJUST {
-    $self->try_config($_) for $file->@*;
+
 };
 
 # User provided/non-default config files. Fatal when path does not exist.
@@ -36,12 +35,23 @@ ADJUST : params (:$config = []) {
       for @$config;
 };
 
+method default_config () {
+    for my $path (@$file) {
+        if ( !$self->$self->try_config($file) ) {
+            if ( $path->parent eq $CONFIGDIR_DEFAULT[0] ) {
+                $$file[0]->spew_utf8();
+            }
+        }
+    }
+    $self->try_config($_) for $file->@*;
+}
+
 method try_config ( $file, %opt ) {
     $self->load_config( $file, %opt, try => 1 );
 }
 
 method load_config ( $file, %opt ) {
-    my $path = path($file);
+    my $path = path($file)->realpath;
 
     if ( !$path->exists ) {
         return undef if $opt{try};
@@ -93,7 +103,20 @@ method config (%opt) {
 
 const our $config_builtin_toml => <<'...';
 [global]
-charset = 'UTF-8'
+ charset = 'UTF-8'
+ listen =':3223'
+ enable-ssl = 1
+
+[[path]]
+ root = "/usr/share/WWW-srvpath/public"
+ mount = "/"
+ ssl-enabled = 1
+ cert-bundle = "<: $certbundle :>"
+ cert-file = "<: $keyfile :>"
+
+ []
+   name = "<: $localuser :>"
+   crypt = "<: $crypt :>"
 
 ...
 

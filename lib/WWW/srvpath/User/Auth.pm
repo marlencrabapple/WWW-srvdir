@@ -2,7 +2,7 @@ use Object::Pad ':experimental(:all)';
 
 package WWW::srvpath::User::Auth;
 
-role WWW::srvpath::User::Auth;
+role WWW::srvpath::User::Auth : does(WWW::srvpath::Base);
 
 use v5.40;
 use utf8;
@@ -11,9 +11,14 @@ use utf8;
 use Const::Fast;
 use Net::SSLeay;
 use Crypt::Argon2 qw'argon2_pass argon2_verify';
-use IO::Handle::Common;
 use Const::Fast;
 use MIME::Base64 'encode_base64';
+use WWW::srvpath::Base;
+
+use parent 'Exporter';
+use vars qw'@EXPORT @EXPORT_OK';
+
+@EXPORT_OK = qw'hashpass argon2_pass argon2_verify';
 
 const our $ARGON2_RE => qr/^
     \$argon2(i|d|id)
@@ -79,14 +84,6 @@ sub hashpass (@opt) {
 
     argon2_pass(@argon2opt);
 }
-
-# method authenticate ( $user, $pass, %opt ) {
-#     if ( my $user = $self->user($user) ) {
-#         return $self->verify( $pass,
-#             $self->user($user)->{ ( $opt{crypt_key} // 'crypt' ) } );
-#     }
-#     undef;
-# }
 
 method valid_pass : common ( $pass, $crypt, %opt ) {
     my $valid = argon2_verify( $crypt, $pass );
