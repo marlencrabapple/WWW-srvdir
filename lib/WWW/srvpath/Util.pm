@@ -2,7 +2,11 @@ use Object::Pad ':experimental(:all)';
 
 package WWW::srvpath::Util;
 
+<<<<<<<< HEAD:lib/WWW/srvpath/Util.pm
 role WWW::srvpath::Util;    #: does(WWW::srvpath::Config);
+========
+role WWW::srvpath::Util;    #: does(WWW::srvdir::Config);
+>>>>>>>> 91594c4 (WIP: Rename module to WWW::srvpath):lib/WWW/srvdir/Util.pm
 
 use utf8;
 use v5.40;
