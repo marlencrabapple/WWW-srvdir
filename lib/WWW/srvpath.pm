@@ -36,8 +36,6 @@ ADJUSTPARAMS($param) {
         $self->add_user( @$param{qw'user pwhash'} );
     }
 
-    # if (scalar $self->userdb->@* == 0
-    #     &&  all { $_ } @ENV{qw'SRVPATH_USER SRVPATH_PWHASH'}
     if ( all { $_ } @ENV{qw'SRVPATH_USER SRVPATH_PWHASH'} ) {
         $self->add_user( $ENV{SRVPATH_USER}, $ENV{SRVPATH_PWHASH} );
     }
@@ -67,7 +65,6 @@ ADJUST {
     $builder->add_middleware(
         'Auth::Basic',
         authenticator => sub ( $user, $pass, $env ) {
-
             foreach my ($dbuser) ( $self->userdb->@* ) {
                 if ( $user eq $$dbuser{user}
                     && WWW::srvpath->valid_pass( $pass, $$dbuser{crypt} ) )

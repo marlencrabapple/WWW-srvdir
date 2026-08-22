@@ -38,20 +38,6 @@ sub epoch ( $join = '' ) {
     join $join, Time::HiRes::gettimeofday;
 }
 
-sub try_path( $in, %opt ) {
-    my $path;
-
-    try {
-        $path = path($in)
-    }
-    catch ($e) {
-        error "$e";
-        dmsg $in, \%opt, $e;
-    }
-
-    $path;
-}
-
 my class FileUnique {
     use utf8;
     use v5.40;

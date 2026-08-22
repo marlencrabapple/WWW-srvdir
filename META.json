@@ -82,13 +82,13 @@
    "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {
-         "web" : "https://github.com/marlencrabapple/WWW-srvpath/issues"
+         "web" : "https://github.com/marlencrabapple/WWW-srvdir/issues"
       },
-      "homepage" : "https://github.com/marlencrabapple/WWW-srvpath",
+      "homepage" : "https://github.com/marlencrabapple/WWW-srvdir",
       "repository" : {
          "type" : "git",
-         "url" : "https://github.com/marlencrabapple/WWW-srvpath.git",
-         "web" : "https://github.com/marlencrabapple/WWW-srvpath"
+         "url" : "https://github.com/marlencrabapple/WWW-srvdir.git",
+         "web" : "https://github.com/marlencrabapple/WWW-srvdir"
       }
    },
    "version" : "0.01",

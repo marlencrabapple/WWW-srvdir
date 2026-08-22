@@ -12,7 +12,7 @@ requires 'IPC::Nosh', '0.01.3';
 requires 'MIME::Types';
 requires 'Net::SSLeay';
 requires 'Object::Pad';
-requires 'Path::Tiny';
+requires 'Path::Tiny::Try';
 requires 'Plack::App::Directory';
 requires 'Plack::Builder';
 requires 'Plack::MIME';
@@ -21,7 +21,7 @@ requires 'Syntax::Keyword::Dynamically';
 requires 'TOML::Tiny';
 requires 'Time::Moment';
 requires 'Time::Piece';
-#requires 'Frame';
+requires 'Frame';
 requires 'Server::Starter';
 
 on 'test' => sub {
