@@ -9,7 +9,7 @@ use v5.40;
 
 our $VERSION = "0.01";
 
-use Path::Tiny;
+use Path::Try;
 use List::Util 'all';
 use MIME::Types 'by_suffix';
 use Plack::Builder;
@@ -61,6 +61,11 @@ ADJUST {
         $builder->add_middleware('Debug');
         $builder->add_middleware('StackTrace');
     }
+
+    $builder->add_middleware_if(
+        sub ($env) { !$env->{REMOTE_ADDR} },
+        "Plack::Middleware::ReverseProxy"
+    );
 
     $builder->add_middleware(
         'Auth::Basic',

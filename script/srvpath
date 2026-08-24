@@ -7,12 +7,13 @@ use v5.40;
 
 use lib 'lib';
 
-use Path::Tiny;
+use Path::Try;
 use Getopt::Long
   qw(GetOptionsFromArray :config no_ignore_case bundling passthrough autoabbrev);
 use Const::Fast;
 use IO::Handle::Common;
 use WWW::srvpath;
+use WWW::srvpath::Base 'refstr';
 
 sub configure ( $argv //= \@ARGV ) {
     my %cliopt = ();
@@ -42,21 +43,66 @@ sub configure ( $argv //= \@ARGV ) {
         'debug', 'help',
         'version',
 
+  # TODO: decide if its better to normalize these differnet option forms here or
+  # in the WWW::srpath `ADJUST :params` block(s):
+  #
+  # - srvpath::CLI sub
+  #   - a sub routine reference should handle it if its all done here and the
+  #     paradigm is normal/familiar
+  #   - no segfaults/panics (developer included)
+  #
+  # - WWW::srvdir
+  #   - the :params attribute for ADJUST seems a perfect fit for transforming #
+  #     values into what your class wants
+  #   - a progmatic interface is planned so this won't be the only place these
+  #     options may need to be handled in different forms
+  #
+  # current winnner: WWW::cgit object construction `ADJUST :params``
+
         'config|config-file|config-path:s@',
 
+        'path|srvpath|root|public|www:s@',    # valid input:
+            #- list of root paths, mounted as basename in value of mount
+
+        'pathmap|rootmount|srcdest|srvpaths:s@',    # valid input:
+            #- list of root paths, mounted as basename in value of mount
+            # - list of colon separated root:mout pairs
+
+        'mount|endpoint|urlbase|uribase:s',    # valid input:
+            #- a single base uri path one or more local paths will be mounted in
         '<>' => sub ($barearg) {
             state $pos //= 0;
+            if ( my ( $root, $mount ) = ( $barearg =~ /^([^:]+):([.+])$/ ) ) {
 
-            error "Positional arguments for 'root' and and 'mount' have already"
-              . " been set.\n Ignoring '$barearg'."
-              if $pos > 1;
+                if ($pos) {
+                    use Data::Printer;
+                    say STDERR
+                      "Local root and URI mount path have already been set: ";
+                    p $cliopt{root}, $cliopt{map};
 
-            $cliopt{ $pos_dest{$pos} } = $barearg;
-            $pos++;
+                    say STDERR
+"Use only the 'root:mount' format as a value for --pathmap or as positional arguments to set multiple custom mappings.";
+
+                    return;
+                }
+
+                push $cliopt{pathmap}->@*, { root => $root, mount => $mount };
+            }
+            else {
+
+                error
+                  "Positional arguments for 'root' and and 'mount' have already"
+                  . " been set.\n Ignoring '$barearg'."
+                  if $pos > 1;
+
+                $cliopt{ $pos_dest{$pos} } = $barearg;
+                $pos++;
+            }
         }
     );
 
-    shift @$argv if ( @$argv[0] eq '--' );
+    shift @$argv
+      if refstr($argv) eq 'ARRAY' && $$argv[0] && $$argv[0] =~ /^--?$/;
 
     WWW::srvpath->new(
         map { $_ =~ s/-/_/; ( $_ => $cliopt{$_} ) }

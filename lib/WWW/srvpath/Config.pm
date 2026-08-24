@@ -19,7 +19,7 @@ const our @CONFIGDIR_DEFAULT =>
 
 field $toml = TOML::Tiny->new;
 field $file = [
-    map  { try_path("$_/srvpath.toml") }
+    map  { path("$_/srvpath.toml") }
     grep { $_ } @CONFIGDIR_DEFAULT
 ];
 field $data : reader = {};
@@ -41,7 +41,7 @@ method try_config ( $file, %opt ) {
 }
 
 method load_config ( $file, %opt ) {
-    my $path = try_path($file);
+    my $path = path($file);
 
     if ( !$path->exists ) {
         return undef if $opt{try};

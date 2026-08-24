@@ -25,7 +25,7 @@ use List::Util 'none';
 use Exporter;
 use parent 'Exporter';
 
-our @EXPORT_OK = qw'path try_path path2uri epoch file_unique path_uri_encode';
+our @EXPORT_OK = qw'path2uri epoch file_unique path_uri_encode';
 our @EXPORT    = @EXPORT_OK;
 
 # field $pathtiny = {};
@@ -72,7 +72,7 @@ my class FileUnique {
 
     method file_unique : common (@in) {
         my $self = $class->new();
-        $self->$file_unique( try_path($_) ) for @in;
+        $self->$file_unique( path($_) ) for @in;
     }
 }
 
@@ -158,7 +158,7 @@ sub path2uri ( $path_aref, %opt ) {
         }
 
         if ( $opt{uniq} || $opt{readpath} ) {
-            $urifield{path} = try_path( $urifield{path} )->absolute;
+            $urifield{path} = path( $urifield{path} )->absolute;
 
             next unless $urifield{path}->is_file;
             next if $opt{unique} && !file_unique( $urifield{path} );
