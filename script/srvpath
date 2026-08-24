@@ -101,10 +101,13 @@ sub configure ( $argv //= \@ARGV ) {
         }
     );
 
+    # Remove options separator (not sure the change that made this necessary...)
     shift @$argv
       if refstr($argv) eq 'ARRAY' && $$argv[0] && $$argv[0] =~ /^--?$/;
 
     WWW::srvpath->new(
+
+        # Replace dashes with underscores for WWW::srvpath constructor
         map { $_ =~ s/-/_/; ( $_ => $cliopt{$_} ) }
           keys %cliopt
     );

@@ -20,12 +20,11 @@ requires 'Plack::Builder';
 requires 'Plack::MIME';
 requires 'Plack::Runner';
 
-# requires 'Plack::Middleware::ReverseProxy';
-# requires 'Plack::Middleware::Rewrite';
-# requires 'Plack::Middleware::Auth::Basic';
-# requires 'Plack::Middleware::Static';
 requires 'Syntax::Keyword::Dynamically';
+
 requires 'TOML::Tiny';
+requires 'JSON::MaybeXS';
+
 requires 'Time::Moment';
 requires 'Time::Piece';
 requires 'Frame';
@@ -37,13 +36,12 @@ on 'test' => sub {
 
 on 'develop' => sub {
     requires 'Module::Build::Tiny';
-    requires 'Plack::Middleware::Debug';
-
-    # requires 'Devel::Trace';
+    requires 'Devel::Trace';
     requires 'Plack::Middleware::StackTrace';
     recommends 'Minilla';
     recommends 'Perl::Critic';
     recommends 'Perl::Tidy';
     recommends 'Carton';
+    recommends 'App::FatPacker';
 }
 

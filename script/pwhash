@@ -28,8 +28,6 @@ method from : common ($argv = \@ARGV) {
         }
     );
 
-    dmsg \%cliopt;
-
     WWW::srvpath::User::Auth::hashpass( delete $cliopt{pass},
         ( salt => ( delete $cliopt{salt} // undef ) ),
         %cliopt )    #%cliopt{qw'salt_bytes'} );
