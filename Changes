@@ -2,6 +2,8 @@ Revision history for Perl extension WWW-srvpath
 
 {{$NEXT}}
 
+0.01 2026-09-06T19:22:58Z
+
     - Trial release that's essentially a predecesor of this script with a few
       fixes and lessons learned. Only supports serving paths that are
       directories now from the command line.
