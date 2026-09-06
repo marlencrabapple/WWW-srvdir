@@ -3,7 +3,7 @@ use Object::Pad ':experimental(:all)';
 package WWW::srvpath::User;
 role WWW::srvpath::User : does(WWW::srvpath::User::Auth);
 
-use v5.40;
+use v5.44;
 use utf8;
 
 use Net::SSLeay;

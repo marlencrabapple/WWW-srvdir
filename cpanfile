@@ -1,9 +1,10 @@
-use v5.40;
-use subs qw'requires recommends on feature';
+use v5.44;
+use subs qw'requires recmmends on feature';
 
-requires 'perl', 'v5.40';
-
+requires 'perl', 'v5.44';
 requires 'meta';
+
+requires 'Object::Pad';
 requires 'Const::Fast';
 requires 'Crypt::Argon2';
 requires 'Cwd';
@@ -11,23 +12,29 @@ requires 'File::ConfigDir';
 requires 'IO::Handle::Common';
 requires 'IO::Socket::SSL';
 requires 'IPC::Nosh', '0.01.3';
-requires 'MIME::Types';
+
 requires 'Net::SSLeay';
-requires 'Object::Pad';
+
 requires 'Path::Try';
+
 requires 'Plack::App::Directory';
 requires 'Plack::Builder';
 requires 'Plack::MIME';
 requires 'Plack::Runner';
+requires 'MIME::Types';
 
 requires 'Syntax::Keyword::Dynamically';
 
+# serialization
 requires 'TOML::Tiny';
 requires 'JSON::MaybeXS';
 
 requires 'Time::Moment';
 requires 'Time::Piece';
+
+# app server and interface with reverse proxy i.e. nginx
 requires 'Frame';
+requires 'Starlet';
 requires 'Server::Starter';
 
 on 'test' => sub {

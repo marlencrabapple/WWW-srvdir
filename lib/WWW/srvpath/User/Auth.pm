@@ -4,7 +4,7 @@ package WWW::srvpath::User::Auth;
 
 role WWW::srvpath::User::Auth : does(WWW::srvpath::Base);
 
-use v5.40;
+use v5.44   ;
 use utf8;
 
 # use System::Info 'sysinfo_hash';

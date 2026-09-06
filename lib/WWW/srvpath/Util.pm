@@ -4,7 +4,7 @@ package WWW::srvpath::Util;
 role WWW::srvpath::Util;    #: does(WWW::srvpath::Config);
 
 use utf8;
-use v5.40;
+use v5.44;
 
 no warnings 'experimental::re_strict';
 use re 'strict';
@@ -31,7 +31,7 @@ sub epoch ( $join = '' ) {
 
 my class FileUnique {
     use utf8;
-    use v5.40;
+    use v5.44;
 
     use IO::Handle::Common;
     use Path::Tiny;

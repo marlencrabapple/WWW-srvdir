@@ -4,7 +4,7 @@ package WWW::srvpath::Config;
 role WWW::srvpath::Config : does(WWW::srvpath::Base);
 
 use utf8;
-use v5.40;
+use v5.44;
 
 use TOML::Tiny;    #'from_toml';
 use Path::Tiny;

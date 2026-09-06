@@ -2,5 +2,17 @@ Revision history for Perl extension WWW-srvpath
 
 {{$NEXT}}
 
-    - original version
-
+    - Trial release that's essentially a predecesor of this script with a few
+      fixes and lessons learned. Only supports serving paths that are
+      directories now from the command line.
+    - Auth::Basic: uses Plack::Middleware::AuthBasic and your choice of command
+      line argument, environment variable, or a TOML configuration file.
+      Multiple users are allowed, and it is encouraged that secrets are hashed
+      before configuring them, something made easy by the included script
+      [pwhash](script/pwhash).
+    - Configuration: the default configuration per host system user is located
+      [$HOME/.config/WWW-srvdir/user.toml](view/user.toml.tx), and another can
+      be loaded at launch or runtime with the `SRVPATH_CONFIG` environment
+      variable (colon-separated list of paths to valid TOML configuration files
+      is the form it should take), and the option as follows:
+      `--config=/path/to/conf.toml [ --config ... ]`

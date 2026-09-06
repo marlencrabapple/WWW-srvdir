@@ -70,12 +70,13 @@
             "Plack::MIME" : "0",
             "Plack::Runner" : "0",
             "Server::Starter" : "0",
+            "Starlet" : "0",
             "Syntax::Keyword::Dynamically" : "0",
             "TOML::Tiny" : "0",
             "Time::Moment" : "0",
             "Time::Piece" : "0",
             "meta" : "0",
-            "perl" : "v5.40.0"
+            "perl" : "v5.44.0"
          }
       },
       "test" : {

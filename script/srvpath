@@ -3,7 +3,7 @@
 package srvpath::CLI;
 
 use utf8;
-use v5.40;
+use v5.44;
 
 use lib 'lib';
 
@@ -51,7 +51,7 @@ sub configure ( $argv //= \@ARGV ) {
   #     paradigm is normal/familiar
   #   - no segfaults/panics (developer included)
   #
-  # - WWW::srvdir
+  # - WWW::srvpath
   #   - the :params attribute for ADJUST seems a perfect fit for transforming #
   #     values into what your class wants
   #   - a progmatic interface is planned so this won't be the only place these
@@ -108,7 +108,7 @@ sub configure ( $argv //= \@ARGV ) {
     WWW::srvpath->new(
 
         # Replace dashes with underscores for WWW::srvpath constructor
-        map { $_ =~ s/-/_/; ( $_ => $cliopt{$_} ) }
+        map { $_ =~ s/-/_/g; ( $_ => $cliopt{$_} ) }
           keys %cliopt
     );
 
@@ -117,7 +117,7 @@ sub configure ( $argv //= \@ARGV ) {
 package srvpath::Runner;
 
 use utf8;
-use v5.40;
+use v5.44;
 
 use IO::Handle::Common;
 
