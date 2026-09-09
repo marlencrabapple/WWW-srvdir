@@ -60,7 +60,7 @@ our %clidest = (
 
 GetOptions(
     \%clidest,
-    'input|file|infile|infname|script=s{,}',
+    'input|file|infile|infname|script=s@',
     => sub {
         $patharg->( shift, dest => \@input );
     },
@@ -69,7 +69,7 @@ GetOptions(
     },
     'outfn|outfname|out-filename|fnfmt|fmtfn|fmt-filename|fmt-outputfn=s',
     'modroot|module-root|module-dir=s',
-    'locallib=s{,}',
+    'locallib=s@',
     'verbose+',
     'debug',
     '<>' => sub ($in) { $patharg->( $in, dest => \@input ) }
