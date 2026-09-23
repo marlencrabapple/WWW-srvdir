@@ -9,9 +9,14 @@ requires 'Const::Fast';
 requires 'Crypt::Argon2';
 requires 'Cwd';
 requires 'File::ConfigDir';
-requires 'IO::Handle::Common';
+
+requires 'IO::Handle::Common', '0.01.1',
+  dist => "CRABAPP/IPC-Handle-Common-0.01.1-TRIAL.tar.gz";
+
 requires 'IO::Socket::SSL';
-requires 'IPC::Nosh', '0.01.3';
+
+requires 'IPC::Nosh', '0.01.4',
+  dist => "CRABAPP/IO-Nosh-0.01.4-TRIAL.tar.gz";
 
 requires 'Net::SSLeay';
 

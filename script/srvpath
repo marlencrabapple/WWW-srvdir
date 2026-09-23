@@ -5,8 +5,6 @@ package srvpath::CLI;
 use utf8;
 use v5.44;
 
-use lib 'lib';
-
 use Path::Try;
 use Getopt::Long
   qw(GetOptionsFromArray :config no_ignore_case bundling passthrough autoabbrev);
