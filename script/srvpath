@@ -32,6 +32,11 @@ sub configure ( $argv //= \@ARGV ) {
         # 'intermediates|chain:s'
         'keyfile|key|ssl-key-file|ssl-keyfile:s',
 
+        'listen:s@',
+        'socket|sockfile|unix:s',
+        'port|service:s',
+        'server|app-server|psgi-server|s:s',
+
         # Auth Basic
         'user|username:s',
         'pwhash|password-hash|crypt:s',             # argon2 hash
@@ -99,17 +104,36 @@ sub configure ( $argv //= \@ARGV ) {
         }
     );
 
-    # Remove options separator (not sure the change that made this necessary...)
-    shift @$argv
-      if refstr($argv) eq 'ARRAY' && $$argv[0] && $$argv[0] =~ /^--?$/;
-
-    WWW::srvpath->new(
+    my $srvpath = WWW::srvpath->new(
 
         # Replace dashes with underscores for WWW::srvpath constructor
         map { $_ =~ s/-/_/g; ( $_ => $cliopt{$_} ) }
           keys %cliopt
     );
 
+    # Plack::Runner/plackup CLI
+    # Remove options separator (not sure the change that made this necessary...)
+    shift @$argv
+      if refstr($argv) eq 'ARRAY' && $$argv[0] && $$argv[0] =~ /^--?$/;
+
+    # Pass through some commands to Plack::Runner for now
+    push @$argv, (
+
+        # Server
+        '-s', $cliopt{server},
+
+        # SSL
+        '--ssl', '--ssl-server', '--ssl-cert-file',
+        ( $cliopt{certbundle} // $cliopt{certfile} ),
+        '--ssl-key-file', $cliopt{keyfile},
+
+        # ...
+        map { ( '--listen', $_ ) } $cliopt{listen}->@*
+    );
+
+    dmsg $argv, \%cliopt, $srvpath;
+
+    $srvpath;
 }
 
 package srvpath::Runner;
@@ -129,6 +153,7 @@ unless (caller) {
     $runner->parse_options(@ARGV);
 
     $runner->run($psgi);
+    $psgi->runner($runner);
 
     error "$! ($?)" if $? > 0;
     exit $?;

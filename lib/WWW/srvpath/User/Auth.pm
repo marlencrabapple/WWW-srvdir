@@ -14,6 +14,7 @@ use Crypt::Argon2 qw'argon2_pass argon2_verify';
 use Const::Fast;
 use MIME::Base64 'encode_base64';
 use WWW::srvpath::Base;
+use IO::Handle::Common;
 
 use parent 'Exporter';
 use vars qw'@EXPORT @EXPORT_OK';

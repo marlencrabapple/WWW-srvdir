@@ -26,7 +26,7 @@ field $data : reader = {};
 # Default configuration files. May warn on error but will fall back to minimal
 # inline config
 ADJUST {
-
+    dmsg $file;
 };
 
 # User provided/non-default config files. Fatal when path does not exist.
